@@ -1,0 +1,9 @@
+/node_modules
+/dist
+/_old
+/.idea
+/.vscode
+/docs
+/doc-src/node_modules
+.fleet/
+/chs-stuff
