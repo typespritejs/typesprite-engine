@@ -1,0 +1,52 @@
+{
+    "name": "typesprite",
+    "displayName": "TypeSpriteJS Game Engine",
+    "version": "0.2.2",
+    "type": "module",
+    "dependencies": {
+        "express": "^4.17.1",
+        "errorhandler": "1.5.1",
+        "jimp": "0.16.2",
+        "msdf-bmfont-xml": "2.7.0",
+        "esbuild": "^0.15"
+    },
+    "devDependencies": {
+        "node-dev": "7.4.3",
+        "tsup": "6.2.3",
+        "typedoc": "^0.23.19",
+        "expect": "^29.3.1",
+        "tsx": "^3.12.1"
+    },
+    "main": "dist/index.js",
+    "files": [
+        "dist",
+        "service"
+    ],
+    "scripts": {
+        "engine:glob": "node service-dev/globber",
+        "engine:build": "node service-dev/globber && tsup --format esm,cjs",
+        "engine:dev":      "tsup --format esm --watch --config ./tsup.config.dev.ts",
+        "engine:game-dev": "tsup --format esm --watch --config ./tsup.config.game-dev.ts --onSuccess='./service-dev/dev-copy-build.sh'",
+        "service:dev": "node-dev ./service-dev/dev-server.js --ignore ../mygame2/node_modules/ttjs/dist/index.js --ignore : ./dist/index.js",
+        "build:dev": "node ./service-dev/dev-build.js",
+        "build": "npm run engine:build",
+        "push": "npm version patch && npm publish",
+        "test": "tsx --tsconfig ./tests-dev/tsconfig.json ./tests-dev/tests.ts"
+    },
+    "exports": {
+        "./LICENSE.MD": "./LICENSE.MD",
+        "./README.MD": "./README.MD",
+        "./package.json": "./package.json",
+        "./dist/*": "./dist/*",
+        ".": {
+            "types": "./dist/index.d.ts",
+            "import": "./dist/index.js",
+            "require": "./dist/index.cjs"
+        }
+    },
+    "bin": {
+        "typesprite": "./bin/typesprite.js"
+    },
+    "author": "Christoph Schnackenberg <mail@xtoff.games>",
+    "license": "MIT"
+}

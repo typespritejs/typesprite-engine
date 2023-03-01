@@ -1,0 +1,30 @@
+{
+    "compilerOptions": {
+      "target": "ES2015",
+      "sourceMap": true,
+      "removeComments": false,
+      "strict": true,
+      "forceConsistentCasingInFileNames": false,
+      "noImplicitAny": false,
+      "noImplicitThis": false,
+      "downlevelIteration": true,
+      "strictNullChecks": false,
+      "baseUrl": ".",
+      "noEmitHelpers": false,
+      "experimentalDecorators": true,
+      "emitDecoratorMetadata": false,
+      "paths": {
+        "@tsjs/*": [ "./*"],
+        "test": ["../service/utils/testor"]
+      },
+      "lib": [
+        "dom",
+        "es2015",
+        "webworker"
+      ],
+      "outDir": "../engine-service"
+    },
+    "include": [
+      "./**/*.ts",
+    ]
+  }

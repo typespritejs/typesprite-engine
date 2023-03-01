@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>TypeSprite</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+</head>
+<body>
+    <div id="gameContainer"><span id="game">${GAME}</span></div>
+    <div><button id="play">PLAY</button></div>
+    <br>
+    <div>
+        <div>ver. <span id="version">${version}</span>, <span id="package">${package}</span></div>
+    </div>
+
+    <div class="cards" id="mainCards">
+    </div>
+
+    <div id="madeWith"><span>made with</span>TypeSprite Game Engine</div>
+</body>
+<script>
+const main = async function() {
+    let gameJson = {};
+    try {
+        const gameText = await fetch('game.json');
+        gameJson = await gameText.json();
+    }
+    catch(err) {
+        console.error("Sorry, failed to fetch /game.json.");
+    }
+
+    document.querySelector("#play").addEventListener('click', () => {
+        window.location = "/play"
+    })
+
+    const setText = (id, value) => document.querySelector(id).textContent = value||document.querySelector(id).textContent;
+
+    const appendCard = (parent, cardId, label, value, link) => {
+
+        const card = document.createElement("div");
+        const valueDiv = document.createElement('div')
+        const labelDiv = document.createElement('div')
+
+        valueDiv.textContent = `${value}`;
+        labelDiv.textContent = `${label}`;
+
+        card.append(valueDiv);
+        card.append(labelDiv);
+        document.querySelector(parent).append(card);
+
+        if (link) {
+            card.addEventListener('click', () => {
+                window.location = link;
+            })
+            card.classList.add("clickCard");
+        }
+
+    }
+
+    setText("#game", gameJson.title);
+    setText("#package", gameJson.package);
+    setText("#version", gameJson.version);
+
+
+
+    try {
+        const debugCmpsText = await fetch('debug/edf');
+        const debugCmps = await debugCmpsText.json();
+
+        appendCard('#mainCards', 'numCmps', 'EDF Components', debugCmps.components.length, '/debug/edf/cmps');
+        appendCard('#mainCards', 'numIssues', 'EDF Issues', debugCmps.issues.length, '/debug/edf/issues');
+    }
+    catch(err) {
+
+    }
+
+
+};
+main().catch(err => console.error(err))
+</script>
+<style>
+
+    #gameContainer {
+        text-align: center;
+        margin-top: 50px;
+        margin-bottom: 20px;
+    }
+
+    #game {
+        font-size: 50px;
+        text-align: center;
+    }
+
+    #madeWith {
+        position: fixed;
+        left: 0;
+        right: 0;
+        bottom: 10px;
+        text-align: center;
+    }
+
+    #madeWith > span:first-child {
+        display: block;
+        font-size: 70%;
+        color: #999;
+        font-weight: bold;
+    }
+
+    #play {
+        font-size: 30px;
+    }
+
+    :root {
+        font-family: Inter, Avenir, Helvetica, Arial, sans-serif;
+        font-size: 16px;
+        /*line-height: 24px;*/
+        font-weight: 400;
+
+        color-scheme: light dark;
+        color: rgba(255, 255, 255, 0.87);
+        background-color: #202021;
+
+        font-synthesis: none;
+        text-rendering: optimizeLegibility;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+        -webkit-text-size-adjust: 100%;
+
+        box-sizing: border-box;
+    }
+
+    a {
+        font-weight: 500;
+        color: #646cff;
+        text-decoration: inherit;
+    }
+    a:hover {
+        color: #535bf2;
+    }
+
+    body {
+        margin: 0;
+        display: flex;
+        place-items: center;
+        flex-direction: column;
+        min-width: 320px;
+        min-height: 100vh;
+    }
+
+    h1 {
+        font-size: 3.2em;
+        line-height: 1.1;
+    }
+
+
+    button {
+        border-radius: 8px;
+        border: 1px solid transparent;
+        padding: 0.5em 1.2em;
+        font-size: 1em;
+        font-weight: 500;
+        font-family: inherit;
+        background-color: #1a1a1a;
+        cursor: pointer;
+        transition: border-color 0.25s;
+    }
+    button:hover {
+        border-color: #646cff;
+    }
+    button:focus,
+    button:focus-visible {
+        outline: 4px auto -webkit-focus-ring-color;
+    }
+
+    .cards {
+        display: flex;
+    }
+
+    .clickCard {
+        cursor: pointer;
+    }
+
+    .clickCard:hover {
+        cursor: pointer;
+        outline: 1px solid #646cff;
+    }
+
+    .cards > div {
+        min-width: 100px;
+        min-height: 100px;
+        background: #444;
+        padding: 10px;
+        margin: 10px;
+        border-radius: 10px;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .cards > div > div {
+        align-self: center;
+        flex: 1;
+        display: flex;
+    }
+
+    .cards > div > div:nth-child(1) {
+        font-size: 50px;
+        flex: 5;
+        align-items: center;
+    }
+
+    .cards > div > div:nth-child(2) {
+        text-transform: capitalize;
+        font-size: 60%;
+        font-weight: bold;
+    }
+
+
+</style>
+</html>
+

@@ -1,0 +1,37 @@
+{
+  "comment": {
+    "_": "Meant for testing."
+  },
+  "compilerOptions": {
+    "target": "ES2015",
+    "module": "ESNext",
+    "sourceMap": true,
+    "removeComments": false,
+    "strict": true,
+    "forceConsistentCasingInFileNames": false,
+    "noImplicitAny": false,
+    "noImplicitThis": false,
+    "downlevelIteration": true,
+    "strictNullChecks": false,
+    "baseUrl": ".",
+    "noEmitHelpers": false,
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": false,
+    "moduleResolution": "node",
+    "esModuleInterop": true,
+    "allowJs": true,
+    "paths": {
+      "@tsjs/*": ["../src/*"],
+      "tsjs": ["../src"],
+      "test": ["../service/utils/testor"]
+    },
+    "lib": [
+      "dom",
+      "es2015",
+      "webworker"
+    ],
+  },
+  "include": [
+    "./**/*.ts"
+  ],
+}
