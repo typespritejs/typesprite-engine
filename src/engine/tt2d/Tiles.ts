@@ -1,5 +1,8 @@
+import { AffineMatrix } from "./AffineMatrix";
+import { Color } from "./Color";
+import { FatRenderer } from "./FatRenderer";
 import { Rect } from "./Rect";
-import { RenderElement } from "./RenderTree";
+import { DirectRenderElement, RenderElement } from "./RenderTree";
 import { SpriteSheetFrame } from "./SpriteSheet";
 
 
@@ -9,22 +12,15 @@ export class Tile {
 
 export enum TileRepeat {
     None,
-    Repeat,
-    RepeatWindow,
-    RepeatCount,
+    Repeat
 }
 
-export class TileLayer extends RenderElement {
-
+export class TileLayer {
     private _numX:number;
     private _numY:number;
-    private _repeatX:TileRepeat = TileRepeat.None;
-    private _repeatY:TileRepeat = TileRepeat.None;
-    private _tiles:Tile[] = [];
-    private _viewport:Rect = new Rect();
+    private _tiles:(Tile|null)[] = [];
     private _tileWidth:number;
     private _tileHeight:number;
-    private _dirtyViewport:number=0;
 
     constructor(
         numX:number,
@@ -32,7 +28,6 @@ export class TileLayer extends RenderElement {
         tileWidth:number,
         tileHeight:number,
     ) {
-        super();
         this._tiles.length = numX * numY;
         this._tileWidth = tileWidth;
         this._tileHeight = tileHeight;
@@ -40,12 +35,46 @@ export class TileLayer extends RenderElement {
         this._numY = numY;
     }
 
-    public setViewport(x:number, y:number, width:number, height:number) {
-        this._viewport.x = x;
-        this._viewport.y = y;
-        this._viewport.width = width;
-        this._viewport.height = height;
-        this._dirtyViewport++;
+    setTile(x:number, y:number, t:Tile|null):this {
+        const i = this.toTileIndex(x, y);
+        if (i < 0 || i >= this._tiles.length) {
+            console.error("Placed tiles out of bounds", {x, y, numX: this._numX, numY: this._numY});
+            return;
+        }
+        this._tiles[i] = t;
+        return this;
+    }
+
+    getTile(x:number, y:number):Tile|null {
+        const i = this.toTileIndex(x, y);
+        return this._tiles[i]||null;
+    }
+
+    getTileWithRepeatMode(
+        x:number, 
+        y:number, 
+        repeatX:TileRepeat,
+        repeatY:TileRepeat 
+    ):Tile|null {
+        const _x = this._indexWithRepeat(x, repeatX, this._numX);
+        const _y = this._indexWithRepeat(y, repeatY, this._numY);
+        const i = _x > -1 && _y > -1 ? this.toTileIndex(_x, _y) : -1;
+        return this._tiles[i]||null;
+    }
+
+    private _indexWithRepeat(v:number, m:TileRepeat, num:number):number {
+        switch(m) {
+            case TileRepeat.Repeat: {
+                const out = v % num;
+                return out < 0 ? out + num : out;
+            }
+            default:
+                return v < 0 || v >= num ? -1 : v;
+        }
+    }
+
+    toTileIndex(x:number, y:number):number {
+        return x + y*this._numX;
     }
 
     get width():number {
@@ -56,12 +85,12 @@ export class TileLayer extends RenderElement {
         return this._numY * this._tileHeight;
     }
 
-    set width(v:number) {
-        console.error("cannot set width of tilelayer. use setViewport to render subsets");
+    get tileWidth():number {
+        return this._tileWidth;
     }
 
-    set height(v:number) {
-        console.error("cannot set height of tilelayer. use setViewport to render subsets");
+    get tileHeight():number {
+        return this._tileHeight;
     }
 
     get tileCountX():number {
@@ -69,6 +98,20 @@ export class TileLayer extends RenderElement {
     }
     get tileCountY():number {
         return this._numY;
+    }
+}
+
+
+export class TileLayerViewport {
+    private _viewport:Rect = new Rect();
+    private _repeatX:TileRepeat = TileRepeat.None;
+    private _repeatY:TileRepeat = TileRepeat.None;
+
+    public setViewport(x:number, y:number, width:number, height:number) {
+        this._viewport.x = x;
+        this._viewport.y = y;
+        this._viewport.width = width;
+        this._viewport.height = height;
     }
 
     get repeatX():TileRepeat {
@@ -85,6 +128,83 @@ export class TileLayer extends RenderElement {
         return this._repeatY;
     }
 
+    getViewRect():Rect {
+        return this._viewport;
+    }
+}
+
+export class TileLayerElement extends DirectRenderElement {
+    private _viewport:TileLayerViewport = new TileLayerViewport();
+    private _layer:TileLayer|null = null;
+    private _fillColor:Color = Color.White.copy();
+
+    constructor() {
+        super();
+        this._viewport.setViewport(0, 0, 100, 100);
+    }
+    
+    get viewport():TileLayerViewport {
+        return this._viewport;
+    }
+
+    get layer():TileLayer|null {
+        return this._layer;
+    }
+
+    set layer(v:TileLayer|null) {
+        this._layer = v;
+    }
+
+    get fillColor():Color {
+        return this._fillColor;
+    }
+
+    renderDirect(renderer: FatRenderer, parentMatrix: AffineMatrix) {
+        if (!this._layer)
+            return;
+
+        renderTilesDirect(renderer, this._layer, this._viewport, this._fillColor);
+    }
+}
+
+
+
+function renderTilesDirect(target:FatRenderer, layer:TileLayer, viewport:TileLayerViewport, fill:Color) {
+    const vr = viewport.getViewRect();
+
+    const tw = layer.tileWidth;
+    const th = layer.tileHeight;
+    let numX = Math.ceil(vr.width / tw) + 2;
+    let numY = Math.ceil(vr.height / th) + 2;
+    
+    const six = Math.floor(vr.x / tw) - 1;
+    const siy = Math.floor(vr.y / th) - 1;
+    const sx = six * tw;
+    const sy = siy * th;
+
+    for (let y=0; y<numY; y++) {
+        for (let x=0; x<numX; x++) {
+
+            const xx = sx + x * tw;
+            const yy = sy + y * th;
+            const t = layer.getTileWithRepeatMode(six + x, siy+y, viewport.repeatX, viewport.repeatY);
+        
+            if (t && t.frame) {
+                target.directDraw(
+                    t.frame.texture,
+                    t.frame.textureRect.x,
+                    t.frame.textureRect.y,
+                    t.frame.textureRect.w,
+                    t.frame.textureRect.h,
+                    xx, yy,
+                    t.frame.textureRect.w,
+                    t.frame.textureRect.h,
+                    fill 
+                    // FIX: blend modes, mixcolor
+                );
+            }
+        }
+    }
 }
 
 
