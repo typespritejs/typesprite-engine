@@ -20,8 +20,8 @@ import {spriteComposeMSDF}  from "./spriteComposeMSDF.js";
 import {composeFonts, composePentacomFonts}  from "./spriteComposeFont.js";
 import Jimp  from "jimp";
 import {copyAndFilter}  from "./copyAndFilter.js";
-import generateBMFont  from 'msdf-bmfont-xml';
 import {fileExists} from "../../utils/files.js";
+// import generateBMFont  from 'msdf-bmfont-xml';
 
 
 
@@ -227,47 +227,48 @@ export async function buildSingleSheet(sheetPath, cacheDir, asepriteBin) {
                 case "filtercopy":
                     // nothing
                     break;
-                case "msdf":
-                    const msdfConf = await readJsonIfExists(candidate);
-                    const msdfTTFPath = candidate.substring(0, candidate.length - ".msdf.json".length) + ".ttf";
-                    if (!await fileExists(msdfTTFPath)) {
-                        throw new Error(`TTF not found for MSDF. Expected: ${msdfTTFPath}`);
-                    }
-
-                    // console.log("candidate =>",candidate);
-
-                    const gen = new Promise((ok, bad) => {
-                        generateBMFont(
-                            //`${process.env.PWD}/LuckiestGuy-Regular.ttf`,
-                            msdfTTFPath,
-                            {
-                                ...msdfConf,
-                                outputType: "json",
-                                fieldType: 'msdf',
-                                textureSize: [1024, 1024],
-                            },
-                            (error, textures, font) => {
-                                if (error)
-                                    bad(error);
-                                else
-                                    ok([textures, font]);
-                            }
-                        );
-                    })
-
-                    const [textures, font] = await gen;
-                    for (const tex of textures) {
-                        const fileName = path.relative(sheetPath, tex.filename) + `.png`;
-                        const cacheTexPath = path.join(fileCacheDir, fileName);
-                        await fs.writeFile(cacheTexPath, tex.texture);
-                    }
-
-                    const fileName = path.relative(sheetPath, font.filename);
-                    const cacheJsonPath = path.join(fileCacheDir, fileName);
-                    // await fs.writeFile(cacheJsonPath, fileName);
-                    await fs.writeFile(`${fileCacheDir}/${name}.${type}.json`, font.data, {encoding: "utf-8"});
-
-                    break;
+                // disabled for now. depedency due to issues
+                // case "msdf":
+                //     const msdfConf = await readJsonIfExists(candidate);
+                //     const msdfTTFPath = candidate.substring(0, candidate.length - ".msdf.json".length) + ".ttf";
+                //     if (!await fileExists(msdfTTFPath)) {
+                //         throw new Error(`TTF not found for MSDF. Expected: ${msdfTTFPath}`);
+                //     }
+                //
+                //     // console.log("candidate =>",candidate);
+                //
+                //     const gen = new Promise((ok, bad) => {
+                //         generateBMFont(
+                //             //`${process.env.PWD}/LuckiestGuy-Regular.ttf`,
+                //             msdfTTFPath,
+                //             {
+                //                 ...msdfConf,
+                //                 outputType: "json",
+                //                 fieldType: 'msdf',
+                //                 textureSize: [1024, 1024],
+                //             },
+                //             (error, textures, font) => {
+                //                 if (error)
+                //                     bad(error);
+                //                 else
+                //                     ok([textures, font]);
+                //             }
+                //         );
+                //     })
+                //
+                //     const [textures, font] = await gen;
+                //     for (const tex of textures) {
+                //         const fileName = path.relative(sheetPath, tex.filename) + `.png`;
+                //         const cacheTexPath = path.join(fileCacheDir, fileName);
+                //         await fs.writeFile(cacheTexPath, tex.texture);
+                //     }
+                //
+                //     const fileName = path.relative(sheetPath, font.filename);
+                //     const cacheJsonPath = path.join(fileCacheDir, fileName);
+                //     // await fs.writeFile(cacheJsonPath, fileName);
+                //     await fs.writeFile(`${fileCacheDir}/${name}.${type}.json`, font.data, {encoding: "utf-8"});
+                //
+                //     break;
             }
         }
 

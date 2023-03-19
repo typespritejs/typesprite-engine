@@ -6,7 +6,7 @@
 import {nextPowerOfTwo} from "./Math2";
 import {EngineContext} from "./EngineContext";
 import {ContextResource} from "./ContextResource";
-import {scaling, ortho, identity, multiply} from '@tsjs/lib/twgl_light';
+import {scaling, ortho, identity, multiply} from '@tsjs/lib/twglParts';
 import {RecoverableResource} from "@tsjs/engine/tt2d/RecoverableResource";
 import {EngineError, EngineErrorType} from "@tsjs/engine/tt2d/EngineError";
 
