@@ -37,6 +37,7 @@ The engine is meant to be used as an NPM package. It brings it's own dev-server,
 
 The following bits are used but not part of package.json:
 
+- HowlerJS, Copyright (c) 2013-2020 James Simpson and GoldFire Studios, https://github.com/goldfire/howler.js, Inc., MIT LICENSE
 - A derived/rewrittten version of Flint particles made by Author: Richard Lord, Copyright © Richard Lord 2008-2011, [LICENSE](https://web.archive.org/web/20220722211611/https://github.com/richardlord/Flint/blob/master/LICENSE)
 - MultiBinPacker https://github.com/image-org/js-packer/blob/development/src/MultiBinPacker.ts, by Copyright (c) 2016 tvolodimir, MIT LICENSE
 - Matrix4 is from Copyright 2019 Gregg Tavares, https://github.com/greggman/twgl.js/blob/v4.21.2/src/m4.js, MIT LICENSE

@@ -23,6 +23,8 @@ import {EngineContext} from "@tsjs/engine/tt2d/EngineContext";
 import {SharedRunnerConfig} from "@tsjs/config/service";
 import {ColorPropertyParser} from "@tsjs/entity/parser/ColorPropertyParser";
 import {WorldState} from "@tsjs/entity/World";
+import {AudioLoader} from "@tsjs/entity/resources/AudioLoader";
+import {SoundBagPropertyParser} from "@tsjs/entity/parser/SoundBagPropertyParser";
 
 
 /**
@@ -119,6 +121,7 @@ export class GameRunner implements EngineContextProvider {
                 .addPropertyParser(new BoolPropertyParser())
                 .addPropertyParser(new AnyPropertyParser())
                 .addPropertyParser(new ColorPropertyParser())
+                .addPropertyParser(new SoundBagPropertyParser())
         }
         for (const p of config.propertyParser||empty) {
             wmb.addPropertyParser(p);
@@ -130,6 +133,7 @@ export class GameRunner implements EngineContextProvider {
             wmb .addResourceLoader(new TextLoader())
                 .addResourceLoader(new JsonLoader())
                 .addResourceLoader(new ImageLoader())
+                .addResourceLoader(new AudioLoader())
                 .addResourceLoader(new TextureLoader(this))
                 .addResourceLoader(new SpriteSheetLoader())
         }
