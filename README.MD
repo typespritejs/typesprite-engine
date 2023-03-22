@@ -33,7 +33,7 @@ The engine is meant to be used as an NPM package. It brings it's own dev-server,
 
 # MIT License  
 
-[MIT licensed](LICENSE.MD) made by Christoph Schnackenberg (https://xtoff.games)
+[MIT licensed](LICENSE.MD), Christoph Schnackenberg (https://xtoff.games)
 
 The following bits are used but not part of package.json:
 
