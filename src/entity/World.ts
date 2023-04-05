@@ -132,7 +132,7 @@ export class World {
      *
      *  - Load and parse the world description file(s) (*.edf)
      *  - Load all resources requested by the static entities of the world description (*.edf)
-     *  - Call all `beforeWorldStart(...)` of st atic entities' components
+     *  - Call all `beforeWorldStart(...)` of static entities' components
      *  - Load all resources requested by `beforeWorldStart(...)`
      *  - Run all entities created in this world
      *

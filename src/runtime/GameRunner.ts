@@ -93,7 +93,7 @@ export class GameRunner implements EngineContextProvider {
             }
             else {
                 if (!selectorElement || typeof (selectorElement as any).getContext != "function") {
-                    throw new Error(`CanvasRenderer(): cannot find canvas object. Searched by using selector: ${config.canvasSelector}`);
+                    throw new Error(`GameRunner(): cannot find canvas object. Searched by using selector: ${config.canvasSelector}`);
                 }
                 canvas = selectorElement as HTMLCanvasElement;
             }

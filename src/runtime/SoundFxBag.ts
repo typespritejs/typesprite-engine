@@ -3,6 +3,7 @@ import {Component} from "@tsjs/entity/Component";
 /**
  * The property of sound should be like this:
  *
+ * ```
  * {
  *     "muh": "assets/sounds/some_very_long_strange_name_with_cow.mp3",
  *     "meh": "assets/sounds/some_very_long_strange_name_with_meh.mp3",
@@ -16,6 +17,7 @@ import {Component} from "@tsjs/entity/Component";
  *         ["mySound3.mp3", 1, [0.5, 2], 0], // random pitch between 0.5 and 2
  *     ]
  * }
+ * ```
  *
  * If loaded successful one can do this:
  *
@@ -23,8 +25,10 @@ import {Component} from "@tsjs/entity/Component";
  * sounds.playSimple('muh'); // simple sound
  * const myHowlerSound = sounds.getSound('muh'); // full access
  *
+ * ```
  * entity.sendMessage('PlaySfx', 'muh');
  * entity.sendMessage('PlaySfx', {name: 'muh', gain: 0.5} );
+ * ```
  *
  * When sounds.playSimple('multi'); // is called both sounds are played at the given config
  *

@@ -102,7 +102,6 @@ export async function buildGameImportFile(config, gameSearchPaths,  subDir, forc
         }
     }
     const run = config.gameConfig.run;
-    console.log("RUN:", run);
     const runType = typeof run;
     switch(runType) {
         case "string":
@@ -122,7 +121,7 @@ export async function buildGameImportFile(config, gameSearchPaths,  subDir, forc
                     return worldName
                 }).filter(name => name !== null)
             };
-            afterLines.push(`console.log('👀 typesprite.config::run not found. Start World(s): ${defaultRun.startWorlds}')`)
+            afterLines.push(`console.log('👉🏻 typesprite.config::run not found. Start World(s): ${defaultRun.startWorlds}')`)
             await injectGameRunnerCode(
                 edfs,
                 dots,

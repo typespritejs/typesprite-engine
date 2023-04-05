@@ -6,7 +6,6 @@
 import {Component} from "@tsjs/entity/Component";
 import {ContextState, EngineContext} from "@tsjs/engine/tt2d/EngineContext";
 import {LUIManager} from "@tsjs/engine/lui/LUIManager";
-import {GameRunner} from "@tsjs/runtime/GameRunner";
 import {linkGlobal, prop} from "@tsjs/entity/decorate/ComponentDecorators";
 import {Color} from "@tsjs/engine/tt2d/Color";
 import {FatRenderer} from "@tsjs/engine/tt2d/FatRenderer";
@@ -18,19 +17,10 @@ import {LUITreeRenderer} from "@tsjs/engine/lui/styles/LUITreeRenderer";
 
 
 /**
- * ```ts
- * props:
  *
- * // true = UI/Game will be scaled
- * // false = 1 game pixel is 1 screen pixel
- * scaleToPixelSize:bool [default: true]
- * ```
  */
 export class GraphicsEngine extends Component {
 
-    //public canvas:HTMLCanvasElement;
-    @prop('bool', true)
-    public scaleToPixelSize:boolean;
     @linkGlobal()
     public engineContext:EngineContext;
     @linkGlobal()
@@ -39,6 +29,11 @@ export class GraphicsEngine extends Component {
     //public clearColor:Color = Color.fromHash("#2a231f");
     @prop("color", "#f88")
     public clearColor:Color;
+    @prop('number', 0)
+    private pixelSize:number;
+    @prop('string', "scale", {allow: ["scale", "fixed", "none"]})
+    private scaleMode:string;
+    private _pixelSize:number;
 
     public lui:LUIManager;
     public renderer:FatRenderer;
@@ -48,7 +43,6 @@ export class GraphicsEngine extends Component {
     private _gui:LUILayer;
     private _width:number = 1;
     private _height:number = 1;
-    private _pixelSize:number = 1;
     private _rootMatrix:AffineMatrix = new AffineMatrix();
 
     private clientToGameX:number = 1;
@@ -108,29 +102,41 @@ export class GraphicsEngine extends Component {
         this.lui.addListener('key', ({key, isDown}) => {
             this._keyDown[key] = isDown;
         });
+
+        this._pixelSize = this.pixelSize > 0 ? this.pixelSize : window.devicePixelRatio;
+        if (this.scaleMode == "scale") {
+            this.canvas.style.position = "absolute";
+            this.canvas.style.width = "100%";
+            this.canvas.style.height = "100%";
+            // const ps = this.pixelSize > 0 ? this.pixelSize : window.devicePixelRatio;
+            this.canvas.width = window.innerWidth*this.actualPixelSize;
+            this.canvas.height = window.innerHeight*this.actualPixelSize;
+        }
+        else if (this.scaleMode == "fixed") {
+            const originalWidth = this.canvas.width;
+            const originalHeight = this.canvas.height;
+            this.canvas.style.width = `${originalWidth}px`;
+            this.canvas.style.height = `${originalHeight}px`;
+            this.canvas.width = originalWidth * this.actualPixelSize;
+            this.canvas.height = originalHeight * this.actualPixelSize;
+        }
+        else if (this.scaleMode == "none") {
+            this._pixelSize = this.pixelSize > 0 ? this.pixelSize : 1;
+        }
+
+        this.windowResize();
+    }
+
+    /**
+     * This is the pixel size the GraphicEngine is using.
+     * It is either window.devicePixelRatio or overwritten by the config.
+     */
+    get actualPixelSize():number {
+        return this._pixelSize;
     }
 
     isKeyDown(key:string):boolean {
         return !!this._keyDown[key];
-    }
-
-    onMessage_CanvasResize({width, height, pixelSize}) {
-        if (this.lui) {
-            this._width = width;
-            this._height = height;
-            this.renderer.flush();
-            this.engineContext.mainRenderTarget.onResize(width, height);
-            if (pixelSize != 1 && this.scaleToPixelSize)
-                this.lui.setRootSize(this.width/pixelSize, this.height/pixelSize);
-            else
-                this.lui.setRootSize(this.width, this.height);
-            this.lui.updateLayout(true);
-            this._rootMatrix.identity();
-            if (pixelSize != 1 && this.scaleToPixelSize)
-                this._rootMatrix.scale(pixelSize, pixelSize);
-            this._pixelSize = pixelSize;
-            this.calcClientToGameCoords();
-        }
     }
 
     public get gui():LUILayer {
@@ -156,7 +162,7 @@ export class GraphicsEngine extends Component {
     }
 
     onDispose() {
-
+        this.renderer.releaseLater();
     }
 
     onUpdate(elapsed: number): void {
@@ -273,13 +279,49 @@ export class GraphicsEngine extends Component {
     private calcClientToGameCoords() {
         //let rect = eventElement.getBoundingClientRect();
         const rect = this.canvas.getBoundingClientRect(); //eventElement.getBoundingClientRect();
-        this.clientToGameX = 1 / rect.width * this.width / (this.scaleToPixelSize ? this._pixelSize : 1);
-        this.clientToGameY = 1 / rect.height * this.height / (this.scaleToPixelSize ? this._pixelSize : 1);
+        // this.clientToGameX = 1 / rect.width * this.width / (this.scaleToPixelSize ? this._pixelSize : 1);
+        // this.clientToGameY = 1 / rect.height * this.height / (this.scaleToPixelSize ? this._pixelSize : 1);
+        this.clientToGameX = 1 / rect.width * this.width;
+        this.clientToGameY = 1 / rect.height * this.height;
         this.clientRect = rect;
     }
 
     private handleWindowResize = e => {
+        this.windowResize();
         this.calcClientToGameCoords();
+
+        this.world.sendMessage("CanvasResize", {
+            width: this.canvas.width/this.actualPixelSize,
+            height: this.canvas.height/this.actualPixelSize,
+            bufferWidth: this.canvas.width,
+            bufferHeight: this.canvas.height,
+            pixelSize: this.actualPixelSize,
+        });
+    }
+
+    private windowResize() {
+        if (this.scaleMode == "scale") {
+            this.canvas.width = window.innerWidth*this.actualPixelSize;
+            this.canvas.height = window.innerHeight*this.actualPixelSize;
+        }
+
+        const width = this.canvas.width/this.actualPixelSize;
+        const height = this.canvas.height/this.actualPixelSize;
+        const bufferWidth = this.canvas.width;
+        const bufferHeight = this.canvas.height;
+
+        this._width = width;
+        this._height = height;
+        this.renderer.flush();
+        this.engineContext.mainRenderTarget.onResize(bufferWidth, bufferHeight);
+
+        if (this.lui) {
+            this.lui.setRootSize(this.width, this.height);
+            this.lui.updateLayout(true);
+            this._rootMatrix.identity();
+            this._rootMatrix.scale(this.actualPixelSize, this.actualPixelSize);
+            this.calcClientToGameCoords();
+        }
     }
 
     private handleMouseDown = e => {

@@ -277,11 +277,12 @@ export class RenderElement {
     }
 
     public get numChildren():number {
-        return this._children.length;
+        return this._children ? this._children.length : 0;
     }
 
     public sortChildren(sorter:(a:RenderElement, b:RenderElement)=>number):void {
-        this._children.sort(sorter);
+        if (this._children)
+            this._children.sort(sorter);
     }
 }
 
