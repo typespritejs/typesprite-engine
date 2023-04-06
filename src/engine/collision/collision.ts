@@ -3,37 +3,49 @@
  *
  * MIT license: https://github.com/typespritejs/typesprite-engine/blob/develop/LICENSE.MD
  *
- * Parts from: https://www.jeffreythompson.org/collision-detection/line-rect.php
+ * Thanks to https://www.jeffreythompson.org/collision-detection/line-rect.php
+ * for the collision functions.
  */
 import {Color} from "@tsjs/engine/tt2d/Color";
+import {Vector2} from "@tsjs/engine/tt2d/Vector";
 
 
-const empty:Collider[] = Object.freeze([]) as any;
-
-export enum DebugSettings {
-    None = 0,
-    DynamicCollider     = 1 << 0,
-    StaticCollider      = 1 << 1,
-    QuadTreeGrid        = 1 << 2,
-    Recents             = 1 << 3,
-    ShapeBoundingBox    = 1 << 4,
-    All                 = ~(~0 << 31)
-}
-
-export enum CollisionLayer {
-    All = ~(~0 << 31),
-    None = 0,
-    Layer = 1 << 0,
-}
-
+/**
+ * A manager to efficiently detect object-intersections in 2D.
+ *
+ * Usage looks like this:
+ * ```ts
+ * const collision = new CollisionEngine();
+ *
+ * // add static collider
+ * collision.addCollider(Collider.createStatic().addShape(new CollisionCircle().setValues(310, 310, 100)));
+ * // add dyanmic collider
+ * collision.addCollider(Collider.createDynamic().addShape(new CollisionLine().setValues(310, 310, 500, 310)));
+ *
+ * // scan for collision
+ * const scanRect = new CollisionRect(0, 0, 100, 50);
+ * const contacts = collision.scan(scanRect);
+ * ```
+ *
+ * Instances of CollisionContact are part of object pooling. Please check
+ * CollisionContact docs for details.
+ *
+ *
+ * @see CollisionContact
+ */
 export class CollisionEngine {
     private dynamicCollider:Collider[] = [];
     private staticColliders:QuadTree = new QuadTree();
     private _tmpCollectors:Collider[] = [];
-    private _debugDrawer:CollisionEngineDebugDrawerImpl|null = null
+    private _debugDrawer:CollisionEngineDebugDrawerImpl|null = null;
+
+    private _poolContact:CollisionContact[] = [];
+    private _poolContactsUsed:number = 0;
 
     public statisticCountChecks:number = 0;
-    public debugDrawOptions:DebugSettings = DebugSettings.All;
+    public debugDrawOptions:DebugSettings =
+        DebugSettings.Recents
+    ;
 
     public getLayerByIndex(index:number=0):CollisionLayer {
         return 1 << index;
@@ -64,7 +76,7 @@ export class CollisionEngine {
             this._debugDrawer = null;
         }
         else {
-            this._debugDrawer = new CollisionEngineDebugDrawerImpl(this);
+            this._debugDrawer = this._debugDrawer ? this._debugDrawer : new CollisionEngineDebugDrawerImpl(this);
         }
         return this;
     }
@@ -78,8 +90,29 @@ export class CollisionEngine {
             this._debugDrawer.debugDraw(dd, this.debugDrawOptions);
     }
 
-    public scan(scanner:CollisionShape, layerMask:number=CollisionLayer.All):Collider[] {
-        let out:Collider[] = empty;
+    private takeFromContactPool():CollisionContact {
+        if (this._poolContactsUsed >= this._poolContact.length) {
+            const c = new CollisionContact();
+            this._poolContactsUsed++;
+            this._poolContact.push(c);
+            return c;
+        }
+        else {
+            const c = this._poolContact[this._poolContactsUsed]
+            this._poolContactsUsed++;
+            return c;
+        }
+    }
+
+    private resetContactPool() {
+        while(this._poolContactsUsed > 0) {
+            this._poolContactsUsed--;
+            this._poolContact[this._poolContactsUsed].reset();
+        }
+    }
+
+    public scan(scanner:CollisionShape, layerMask:number=CollisionLayer.All, out:CollisionContact[]=[]):CollisionContact[] {
+        this.resetContactPool();
         this._tmpCollectors.length = 0;
         this.statisticCountChecks = 0;
         this.staticColliders.queryElements(scanner, this._tmpCollectors);
@@ -98,12 +131,17 @@ export class CollisionEngine {
             for (const s of (c as any)._shapes) {
                 this.statisticCountChecks++;
                 if (check(scanner, s)) {
-                    out = out === empty ? [] : out;
                     if (!foundColl) {
                         foundColl = true;
                         if (this._debugDrawer)
                             this._debugDrawer.recentColCollider.add(c);
-                        out.push(c);
+                        //out.push(c);
+                        const contact = this.takeFromContactPool();
+                        contact.scan = null;
+                        contact.collisionShape = scanner;
+                        contact.collision = c;
+                        contact.collisionShape = s;
+                        out.push(contact);
                     }
                     if (this._debugDrawer) {
                         this._debugDrawer.recentColShape.add(s);
@@ -127,12 +165,16 @@ export class CollisionEngine {
             for (const s of (c as any)._shapes) {
                 this.statisticCountChecks++;
                 if (check(scanner, s)) {
-                    out = out === empty ? [] : out;
                     if (!foundColl) {
                         foundColl = true;
                         if (this._debugDrawer)
                             this._debugDrawer.recentColCollider.add(c);
-                        out.push(c);
+                        const contact = this.takeFromContactPool();
+                        contact.scan = null;
+                        contact.collisionShape = scanner;
+                        contact.collision = c;
+                        contact.collisionShape = s;
+                        out.push(contact);
                     }
                     if (this._debugDrawer) {
                         this._debugDrawer.recentColShape.add(s);
@@ -153,9 +195,63 @@ export class CollisionEngine {
 
 // ---------------------------------------------------------------------------------------------------
 
+/**
+ * Object that contains the details about a contact.
+ *
+ * ## 🔥 Careful
+ *
+ * Values of this instance change with every call to `scan(...)`
+ * so it's not meant for you to keep.
+ *
+ * CollisionContact objects are part of an internal object pooling. This is a measure to reduce
+ * the pressure on the garbage collector.
+ *
+ * ```ts
+ * const contactsA = collision.scan(myScanShape);       // 1st scan
+ * const contactsA_copy = contacts.map(c => c.copy());  // copy for later use
+ * const contactsB = collision.scan(myScanShape);       // 2nd scan
+ *
+ * console.log(contactsA);      // <- BAD! Random data because of 2nd scan
+ * console.log(contactsA_copy); // <- OK!
+ * console.log(contactsB);      // <- OK, because it's data from the last scan
+ * ```
+ *
+ */
+export class CollisionContact {
+    public scan:Collider|null = null;
+    public scanShape:CollisionShape|null = null;
+    public collision:Collider|null = null;
+    public collisionShape:CollisionShape|null = null;
+
+    public reset() {
+        this.scan = null;
+        this.scanShape = null;
+        this.collision = null;
+        this.collisionShape = null;
+    }
+
+    /**
+     * Use this if you like to retain the contact information longer than the next scan
+     */
+    public copy():CollisionContact {
+        const out = new CollisionContact()
+        out.scan = this.scan;
+        out.scanShape = this.scanShape;
+        out.collision = this.collision;
+        out.collisionShape = this.collisionShape;
+        return out;
+    }
+}
+
+// ---------------------------------------------------------------------------------------------------
+
+/**
+ * Object for collision detection.
+ */
 export class Collider {
     public enabled:boolean = true;
-    // make this a thing (bitmasking)
+    public name:string = "";
+    public userObject:any = null;
 
     private _shapes:CollisionShape[] = [];
     private _dirty:number = 0;
@@ -508,7 +604,26 @@ function lineIntersectsWithLineBold(
     return false;
 }
 
-// -------------------------------------------------------------------------------------
+
+/**
+ *
+ */
+export enum DebugSettings {
+    None = 0,
+    DynamicCollider     = 1 << 0,
+    StaticCollider      = 1 << 1,
+    QuadTreeGrid        = 1 << 2,
+    Recents             = 1 << 3,
+    ShapeBoundingBox    = 1 << 4,
+    All                 = ~(~0 << 31)
+}
+
+export enum CollisionLayer {
+    All = ~(~0 << 31),
+    None = 0,
+    Layer = 1 << 0,
+}
+
 
 enum ShapeType {
     Point,
@@ -868,12 +983,6 @@ class QuadTree {
         return (e as any)._quadNode && (e as any)._quadTree === this;
     }
     queryElements(queryShape:CollisionShape, target:Collider[]=[]):Collider[] {
-        // if (!(queryShape instanceof QuadRect ||
-        //       queryShape instanceof Circle)) {
-        //     console.error("Cannot query with ", queryShape, ". Incompatible type.");
-        //     return [];
-        // }
-        //let elements = [];
         this.measureChecks = 0;
         this._root.getIntersectingElements(queryShape, target, 0);
         return target;

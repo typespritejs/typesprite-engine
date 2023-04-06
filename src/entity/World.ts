@@ -648,8 +648,8 @@ export class World {
      * @param componentName
      * @param activeOnly if false it also searches deactive entities
      */
-    findEntitiesWithComponent(componentName, activeOnly = true) {
-        const candidates:any[] = [];
+    findEntitiesWithComponent(componentName, activeOnly = true):Entity[] {
+        const candidates:Entity[] = [];
         const len = this._actives.length;
         for (let i=0; i<len; i++)
             if (this._actives[i].findComponent(componentName)) {

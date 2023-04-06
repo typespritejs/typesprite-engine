@@ -9,6 +9,8 @@ import {prop} from "@tsjs/entity/decorate/ComponentDecorators";
 
 
 /**
+ * ## AudioManager-Component
+ *
  * Attach this early when running the game to ensure that
  * the audio context is available
  */

@@ -1,6 +1,8 @@
 import {Component} from "@tsjs/entity/Component";
 
 /**
+ * ## SoundFxBag-Component
+ *
  * The property of sound should be like this:
  *
  * ```

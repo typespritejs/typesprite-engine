@@ -14,10 +14,27 @@ import {RenderElement} from "@tsjs/engine/tt2d/RenderTree";
 import {AffineMatrix} from "@tsjs/engine/tt2d/AffineMatrix";
 import {LUIFreeStackLayout} from "@tsjs/engine/lui/layouts/LUIFreeStackLayout";
 import {LUITreeRenderer} from "@tsjs/engine/lui/styles/LUITreeRenderer";
+import {OverlayCanvas} from "@tsjs/runtime/OverlayCanvas";
 
 
 /**
+ * ## GraphicsEngine-Component
  *
+ * This component will do the following tasks for you:
+ *
+ *  - manage a FatRenderer instance
+ *  - manage a LUIManager instance
+ *  - manage the canvas (HTMLCanvasElement)
+ *  - manages touch/mouse input
+ *  - observes keyboard-input (keyDown, keyUp etc.)
+ *
+ * You use this to:
+ *  - add graphics objects to the world
+ *  - add UI elements to the GUI
+ *  - configure how your canvas get's scaled (or tell it that you like to do that yourself)
+ *
+ * @see FatRenderer
+ * @see LUIManager
  */
 export class GraphicsEngine extends Component {
 
@@ -44,6 +61,7 @@ export class GraphicsEngine extends Component {
     private _width:number = 1;
     private _height:number = 1;
     private _rootMatrix:AffineMatrix = new AffineMatrix();
+    private _overlayCanvasList:OverlayCanvas[] = [];
 
     private clientToGameX:number = 1;
     private clientToGameY:number = 1;
@@ -287,8 +305,10 @@ export class GraphicsEngine extends Component {
     }
 
     private handleWindowResize = e => {
+        this._overlayCanvasList.forEach(c => c.resize())
         this.windowResize();
         this.calcClientToGameCoords();
+
 
         this.world.sendMessage("CanvasResize", {
             width: this.canvas.width/this.actualPixelSize,
@@ -407,25 +427,31 @@ export class GraphicsEngine extends Component {
     private onDown(x:number, y:number) {
         if (this.renderer.engineContext.contextState == ContextState.Lost)
             return;
-
-        //console.log("Down:", x, y);
         const consumed = this.lui.handleMouseDown(x, y);
     }
 
     private onMove(x:number, y:number) {
         if (this.renderer.engineContext.contextState == ContextState.Lost)
             return;
-
-        //console.log("Move:", x, y);
         this.lui.handleMouseMove(x, y, true);
     }
 
     private onUp(x:number, y:number) {
         if (this.renderer.engineContext.contextState == ContextState.Lost)
             return;
-
-        //console.log("Up:", x, y);
         const consumed = this.lui.handleMouseUp(x, y);
     }
+
+    appendOverlayCanvas(factor:number=1):OverlayCanvas {
+        const overlay = new OverlayCanvas(
+            this.canvas,
+            this.canvas.width,
+            this.canvas.height,
+        );
+        this._overlayCanvasList.push(overlay);
+        return overlay;
+    }
 }
+
+
 
