@@ -8,12 +8,14 @@
 /**
  * Transforms:
  *
+ * ```
  * "a/b/c" => "a/b"
  * "a/b/c/" => "a/b"
  * "a/b/file.txt" => "a/b"
  * "" => ""
  * "/" => ""
  * "file.txt" => "file.txt"
+ * ```
  */
 export function dirname(path:string):string {
     if (typeof path !== "string")

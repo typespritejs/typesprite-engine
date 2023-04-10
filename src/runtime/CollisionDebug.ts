@@ -5,10 +5,10 @@
  */
 import {cmp, link, prop} from "@tsjs/entity/decorate/ComponentDecorators";
 import {CollisionEngine, CollisionEngineDebugDrawer, DebugSettings} from "@tsjs/engine/collision/collision";
-import {GraphicsEngine} from "@tsjs/runtime/GraphicsEngine";
 import {QuadElement, RenderElement} from "@tsjs/engine/tt2d/RenderTree";
 import {Color} from "@tsjs/engine/tt2d/Color";
 import {Component} from "@tsjs/entity/Component";
+import {GraphicsEngine} from "@tsjs/runtime/GraphicsEngine";
 
 
 /**
@@ -22,7 +22,7 @@ import {Component} from "@tsjs/entity/Component";
 export class CollisionDebug extends Component implements CollisionEngineDebugDrawer {
 
 
-    @cmp("GraphicsEngine:typesprite", false)
+    @cmp("GraphicsEngine:typesprite", true)
     private gfx:GraphicsEngine;
     @prop('number', 9999)
     private drawLimit:number;
@@ -31,14 +31,20 @@ export class CollisionDebug extends Component implements CollisionEngineDebugDra
 
     private poolQuads:QuadElement[] = [];
     private poolQuadsUsed:number = 0;
-    private debugLayer:RenderElement;
+    private _debugLayer:RenderElement;
     private _engine:CollisionEngine|null = null;
     private _limitReached = false;
 
     onInit() {
-        this.debugLayer = new RenderElement();
-        let gfx:GraphicsEngine = this.gfx;
-        gfx.gameLayer.addChild(this.debugLayer);
+        this._debugLayer = new RenderElement();
+        if (this.gfx) {
+            let gfx:GraphicsEngine = this.gfx;
+            gfx.gameLayer.addChild(this._debugLayer);
+        }
+    }
+
+    get debugLayer():RenderElement {
+        return this._debugLayer;
     }
 
     set engine(v:CollisionEngine) {
@@ -51,7 +57,7 @@ export class CollisionDebug extends Component implements CollisionEngineDebugDra
 
     onRender(elapsed: number): void {
         if (this.engine) {
-            this.debugLayer.removeAllChildren();
+            this._debugLayer.removeAllChildren();
             this.poolQuadsUsed = 0;
             this._limitReached = false;
             this.engine.debugDraw(this);
@@ -69,13 +75,13 @@ export class CollisionDebug extends Component implements CollisionEngineDebugDra
             const q = new QuadElement(0, 0);
             this.poolQuadsUsed++;
             this.poolQuads.push(q);
-            this.debugLayer.addChild(q);
+            this._debugLayer.addChild(q);
             return q;
         }
         else {
             const q = this.poolQuads[this.poolQuadsUsed]
             this.poolQuadsUsed++;
-            this.debugLayer.addChild(q);
+            this._debugLayer.addChild(q);
             return q;
         }
     }

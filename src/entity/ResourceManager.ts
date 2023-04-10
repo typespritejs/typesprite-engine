@@ -238,7 +238,7 @@ export class ResourceManager {
             const loader = this.loaders.get(loaderId);
             if (!loader) {
                 res.state = ResourceState.Error;
-                res.issue = `Loader not found!`;
+                res.issue = `Loader not found! 💡 Forget to use the loader-prefix? Try 'json:path/to/myFile.json'`;
                 console.error(`Failed to load ${res.resUrl}. ${res.issue}`);
                 this.scheduleHeartbeat();
                 continue;

@@ -76,7 +76,7 @@ export class WorldStartHandler {
 
     private instantitate(cb:InstanceCallback) {
         if (this.shared.instances.length <= 0) {
-            cb(null);
+            cb([]);
             return;
         }
         //
@@ -98,7 +98,7 @@ export class WorldStartHandler {
 // ---------------------------------------------------------------------------------------------------------------------
 
 type PropType = Record<string, string|number|boolean|null>;
-type InstanceCallback = (e:EntityInstance[]|null)=>void;
+type InstanceCallback = (e?:EntityInstance[])=>void;
 
 class SpawnInstance {
     name:string;
@@ -113,7 +113,35 @@ class SharedStarterContext {
 // ---------------------------------------------------------------------------------------------------------------------
 
 export interface WorldStartContext {
+    /**
+     * Use this to request the spawn of a game object.
+     *
+     * @param def
+     * @param props
+     * @param name
+     */
     spawn(def: string, props?: PropType, name?: string):void;
+
+    /**
+     * Here you can load additional resources you need in the world.
+     *
+     * This is the perfect place to load custom map files.
+     *
+     * Note: Use the loader-prefix here:
+     *
+     * ```ts
+     * private async beforeWorldStart(loader:WorldStartContext) {
+     *   const [mapJson] = await loader.requestResource([`json:path/to/myMap.json`])
+     *   //                                               ^^^^^
+     *   //                                                 |
+     *   //                                                 Loader Prefix
+     * }
+     * ```
+     *
+     * Note: If loading fails it WON'T THROW throw here but give `null` instead.
+     *
+     * @param resUrls
+     */
     requestResource(resUrls: string[]): Promise<any[]>;
 }
 

@@ -62,6 +62,9 @@ export class DebugUI extends Component {
         this.visible = v;
         window.sessionStorage.setItem("overlayVisible", v ? "true": "false");
         this.overlay.getRenderer().canvas.style.display = this.visible ? '' : 'none';
+
+        if (v)
+            this.redrawOverlay()
     }
 
     onActivate(): void {

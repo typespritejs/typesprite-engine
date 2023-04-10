@@ -7,7 +7,7 @@
  * for the collision functions.
  */
 import {Color} from "@tsjs/engine/tt2d/Color";
-import {Vector2} from "@tsjs/engine/tt2d/Vector";
+
 
 
 /**
@@ -47,7 +47,7 @@ export class CollisionEngine {
         DebugSettings.Recents
     ;
 
-    public getLayerByIndex(index:number=0):CollisionLayer {
+    public static getLayerByIndex(index:number=0):CollisionLayer {
         return 1 << index;
     }
 
@@ -141,6 +141,11 @@ export class CollisionEngine {
                         contact.collisionShape = scanner;
                         contact.collision = c;
                         contact.collisionShape = s;
+                        const startIndex = contact.contactPoints.length;
+                        contact.contactPoints.length += contacts.length;
+                        for (let i=0; i<contacts.length; i++) {
+                            contact.contactPoints[startIndex + i] = contacts[i];
+                        }
                         out.push(contact);
                     }
                     if (this._debugDrawer) {
@@ -174,6 +179,11 @@ export class CollisionEngine {
                         contact.collisionShape = scanner;
                         contact.collision = c;
                         contact.collisionShape = s;
+                        const startIndex = contact.contactPoints.length;
+                        contact.contactPoints.length += contacts.length;
+                        for (let i=0; i<contacts.length; i++) {
+                            contact.contactPoints[startIndex + i] = contacts[i];
+                        }
                         out.push(contact);
                     }
                     if (this._debugDrawer) {
@@ -187,7 +197,7 @@ export class CollisionEngine {
         }
         if (this._debugDrawer) {
             const target = out.length > 0 ? this._debugDrawer.recentScannerCol : this._debugDrawer.recentScanner;
-            target.add(scanner);
+            target.add(scanner.copy());
         }
         return out;
     }
@@ -222,12 +232,20 @@ export class CollisionContact {
     public scanShape:CollisionShape|null = null;
     public collision:Collider|null = null;
     public collisionShape:CollisionShape|null = null;
+    /**
+     * contact points encoded
+     *
+     * length: 2 = x,y
+     * length: 4 = x1,y1 x2,y2
+     */
+    public contactPoints:number[] = [];
 
     public reset() {
         this.scan = null;
         this.scanShape = null;
         this.collision = null;
         this.collisionShape = null;
+        this.contactPoints.length = 0;
     }
 
     /**
@@ -239,6 +257,7 @@ export class CollisionContact {
         out.scanShape = this.scanShape;
         out.collision = this.collision;
         out.collisionShape = this.collisionShape;
+        out.contactPoints = [...this.contactPoints];
         return out;
     }
 }
@@ -339,13 +358,8 @@ export class Collider {
 // -------------------------------------------------------------------------------------
 
 function check(a:CollisionShape, b:CollisionShape):boolean {
-
-    // TODO add statistics here:
-    // numRectVsRect: 0
-    // numRectVsLine: 0
-    // numRectVsPoint: 0
-    // ...
-
+    if (contacts.length > 0)
+        contacts.length = 0;
     switch(a.shapeType) {
         case ShapeType.Rect:
             switch(b.shapeType) {
@@ -541,6 +555,9 @@ function circleIntersectsWithLine(c:CollisionCircle, l:CollisionLine):boolean {
     const distY = closestY - c.y;
     const distanceSquared = (distX*distX) + (distY*distY) //Math.sqrt( (distX*distX) + (distY*distY) );
     if (distanceSquared <= c.radius*c.radius) {
+        // contacts.length += 2;
+        // contacts[contacts.length-2] = closestX;
+        // contacts[contacts.length-1] = closestY;
         return true;
     }
     return false;
@@ -549,14 +566,14 @@ function circleIntersectsWithLine(c:CollisionCircle, l:CollisionLine):boolean {
 // ---------------------------------------------------------------------------------------------------
 
 function rectIntersectsWithLine(a:CollisionRect, b:CollisionLine):boolean {
-    p.x = b.x;
-    p.y = b.y;
-    if (pointInRect(a, p))
-        return true;
-    p.x = b.x2;
-    p.y = b.y2;
-    if (pointInRect(a, p))
-        return true;
+    // p.x = b.x;
+    // p.y = b.y;
+    // if (pointInRect(a, p))
+    //     return true;
+    // p.x = b.x2;
+    // p.y = b.y2;
+    // if (pointInRect(a, p))
+    //     return true;
     return  lineIntersectsWithLineBold(b.x, b.y, b.x2, b.y2,   a.x,       a.y,         a.x + a.w, a.y) ||       // top
         lineIntersectsWithLineBold(b.x, b.y, b.x2, b.y2,   a.x,       a.y,         a.x,       a.y + a.h) || // left
         lineIntersectsWithLineBold(b.x, b.y, b.x2, b.y2,   a.x + a.w, a.y,         a.x + a.w, a.y + a.h) || // right
@@ -599,6 +616,9 @@ function lineIntersectsWithLineBold(
     if (uA >= 0 && uA <= 1 && uB >= 0 && uB <= 1) {
         const intersectionX = x1 + (uA * (x2-x1));
         const intersectionY = y1 + (uA * (y2-y1));
+        contacts.length += 2;
+        contacts[contacts.length-2] = intersectionX;
+        contacts[contacts.length-1] = intersectionY;
         return true;
     }
     return false;
@@ -640,6 +660,10 @@ export abstract class CollisionShape {
         return ShapeType.Point;
     }
 
+    copy():CollisionShape {
+        return null;
+    }
+
     get left()  {
         return this.x;
     }
@@ -657,6 +681,10 @@ export abstract class CollisionShape {
 // ---------------------------------------------------------------------------------------------------
 
 export class CollisionPoint extends CollisionShape {
+
+    copy():CollisionPoint {
+        return new CollisionPoint().setValues(this.x, this.y);
+    }
 
     setValues(x:number, y:number):this {
         this.x = x;
@@ -677,6 +705,10 @@ export class CollisionLine extends CollisionShape {
         this.x2 = x2;
         this.y2 = y2;
         return this
+    }
+
+    copy():CollisionLine {
+        return new CollisionLine().setValues(this.x, this.y, this.x2, this.y2);
     }
 
     get shapeType():ShapeType {
@@ -713,6 +745,10 @@ export class CollisionCircle extends CollisionShape {
         return this
     }
 
+    copy():CollisionCircle {
+        return new CollisionCircle().setValues(this.x, this.y, this.radius);
+    }
+
     get left()  {
         return this.x - this.radius;
     }
@@ -739,6 +775,10 @@ export class CollisionRect extends CollisionShape {
         this.y = y;
         this.w = w;
         this.h = h;
+    }
+
+    copy():CollisionRect {
+        return new CollisionRect().setValues(this.x, this.y, this.w, this.h);
     }
 
     setValues(x:number, y:number, w:number, h:number):CollisionRect {
@@ -819,6 +859,7 @@ export class CollisionRect extends CollisionShape {
 }
 
 const p = new CollisionPoint();
+const contacts:number[] = [];
 
 
 // ---------------------------------------------------------------------------------------------------
