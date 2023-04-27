@@ -75,7 +75,7 @@ export class Friction  implements Modifier {
 /**
  * @see Flignov
  */
-export class RandomDrift  implements Modifier {
+export class RandomDrift implements Modifier {
     private x: number;
     private y: number;
 

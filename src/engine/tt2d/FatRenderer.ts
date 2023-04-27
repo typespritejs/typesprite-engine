@@ -528,6 +528,7 @@ export class FatRenderer extends ContextResource implements RecoverableResource 
         colTopRight:Color = colTopLeft,
         colBottomRight:Color = colTopLeft,
         blendMode:BlendMode = BlendMode.BM_NORMAL,
+        rotAxis:boolean=false,
     ) {
         if (this.directDrawing <= 0)
             throw new Error(`Missing beginDirectDraw()`);
@@ -555,8 +556,8 @@ export class FatRenderer extends ContextResource implements RecoverableResource 
         let obi = bi;
         this.cpuBuffer[bi++] = tempvec2[X];
         this.cpuBuffer[bi++] = tempvec2[Y];
-        this.cpuBuffer[bi++] = sx * tfx; // u
-        this.cpuBuffer[bi++] = sy * tfy; // v
+        this.cpuBuffer[bi++] = rotAxis ? sy * tfy: sx * tfx; // u
+        this.cpuBuffer[bi++] = rotAxis ? sx * tfx: sy * tfy; // v
         this.cpuBuffer[bi++] = colTopLeft.r; // r
         this.cpuBuffer[bi++] = colTopLeft.g; // g
         this.cpuBuffer[bi++] = colTopLeft.b; // b
@@ -580,8 +581,8 @@ export class FatRenderer extends ContextResource implements RecoverableResource 
         currentMatrix.multiplyVector(tempvec2);
         this.cpuBuffer[bi++] = tempvec2[X];
         this.cpuBuffer[bi++] = tempvec2[Y];
-        this.cpuBuffer[bi++] = sx * tfx; // u
-        this.cpuBuffer[bi++] = (sy + sh) * tfy; // v
+        this.cpuBuffer[bi++] = rotAxis ? (sy + sh) * tfy: sx * tfx; // u
+        this.cpuBuffer[bi++] = rotAxis ? sx * tfx: (sy + sh) * tfy; // v
         this.cpuBuffer[bi++] = colBottomLeft.r; // r
         this.cpuBuffer[bi++] = colBottomLeft.g; // g
         this.cpuBuffer[bi++] = colBottomLeft.b; // b
@@ -593,8 +594,8 @@ export class FatRenderer extends ContextResource implements RecoverableResource 
         currentMatrix.multiplyVector(tempvec2);
         this.cpuBuffer[bi++] = tempvec2[X];
         this.cpuBuffer[bi++] = tempvec2[Y];
-        this.cpuBuffer[bi++] = (sx + sw) * tfx; // u
-        this.cpuBuffer[bi++] = sy * tfy; // v
+        this.cpuBuffer[bi++] = rotAxis ? sy * tfy : (sx + sw) * tfx; // u
+        this.cpuBuffer[bi++] = rotAxis ? (sx + sw) * tfx :  sy * tfy; // v
         this.cpuBuffer[bi++] = colTopRight.r; // r
         this.cpuBuffer[bi++] = colTopRight.g; // g
         this.cpuBuffer[bi++] = colTopRight.b; // b
@@ -606,13 +607,12 @@ export class FatRenderer extends ContextResource implements RecoverableResource 
         currentMatrix.multiplyVector(tempvec2);
         this.cpuBuffer[bi++] = tempvec2[X];
         this.cpuBuffer[bi++] = tempvec2[Y];
-        this.cpuBuffer[bi++] = (sx + sw) * tfx; // u
-        this.cpuBuffer[bi++] = (sy + sh) * tfy; // v
+        this.cpuBuffer[bi++] = rotAxis ? (sy + sh) * tfy : (sx + sw) * tfx; // u
+        this.cpuBuffer[bi++] = rotAxis ? (sx + sw) * tfx : (sy + sh) * tfy; // v
         this.cpuBuffer[bi++] = colBottomRight.r; // r
         this.cpuBuffer[bi++] = colBottomRight.g; // g
         this.cpuBuffer[bi++] = colBottomRight.b; // b
         this.cpuBuffer[bi++] = colBottomRight.a; // a
-
 
         this.numElements++;
         this.byteIndex = bi;

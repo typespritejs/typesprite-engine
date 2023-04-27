@@ -5,7 +5,7 @@ Entity & Component game engine with batteries included for browser. MIT License.
   - 🔥 2D WebGL graphics engine + UI
   - 🌆 Automatic SpriteSheet generation
   - 📦 Bundling solved. Typescript just works. esbuild based.
-  - ⌨️ Made for developers. No _drag & drop_ required
+  - ⌨️ Made for developers. 
   - 🌍 Manage your game in Worlds
   - 🧱 Consume custom formats using custom loader and properties
   - 🤗 Good neighbor no singletons, no globals.
@@ -33,7 +33,7 @@ The engine is meant to be used as an NPM package. It brings it's own dev-server,
 
 # MIT License  
 
-[MIT licensed](LICENSE.MD), Christoph Schnackenberg (https://xtoff.games)
+[MIT license](LICENSE.MD), Christoph Schnackenberg [https://xtoff.games](https://xtoff.games)
 
 The following bits are used but not part of package.json:
 

@@ -1,13 +1,17 @@
-import { AffineMatrix } from "./AffineMatrix";
-import { Color } from "./Color";
-import { FatRenderer } from "./FatRenderer";
-import { Rect } from "./Rect";
-import { DirectRenderElement, RenderElement } from "./RenderTree";
-import { SpriteSheetFrame } from "./SpriteSheet";
+import {AffineMatrix} from "./AffineMatrix";
+import {Color} from "./Color";
+import {FatRenderer} from "./FatRenderer";
+import {Rect} from "./Rect";
+import {DirectRenderElement} from "./RenderTree";
+import {SpriteSheetFrame} from "./SpriteSheet";
+import {BlendMode} from "@tsjs/engine/tt2d/BlendMode";
 
 
 export class Tile {
     public frame:SpriteSheetFrame;
+    public flipX:boolean = false;
+    public flipY:boolean = false;
+    public flipDiag:boolean = false;
 }
 
 export enum TileRepeat {
@@ -188,19 +192,27 @@ function renderTilesDirect(target:FatRenderer, layer:TileLayer, viewport:TileLay
             const xx = sx + x * tw;
             const yy = sy + y * th;
             const t = layer.getTileWithRepeatMode(six + x, siy+y, viewport.repeatX, viewport.repeatY);
-        
+
             if (t && t.frame) {
-                target.directDraw(
+                const srX = t.flipX ? t.frame.textureRect.x + t.frame.textureRect.w : t.frame.textureRect.x;
+                const srY = t.flipY ? t.frame.textureRect.y + t.frame.textureRect.h : t.frame.textureRect.y;
+                const srW = t.flipX ? -t.frame.textureRect.w : t.frame.textureRect.w;
+                const srH = t.flipY ? -t.frame.textureRect.h : t.frame.textureRect.h;
+                target.directDrawMix(
                     t.frame.texture,
-                    t.frame.textureRect.x,
-                    t.frame.textureRect.y,
-                    t.frame.textureRect.w,
-                    t.frame.textureRect.h,
+                    srX,
+                    srY,
+                    srW,
+                    srH,
                     xx, yy,
                     t.frame.textureRect.w,
                     t.frame.textureRect.h,
-                    fill 
-                    // FIX: blend modes, mixcolor
+                    fill,
+                    fill,
+                    fill,
+                    fill,
+                    BlendMode.BM_NORMAL,
+                    t.flipDiag
                 );
             }
         }

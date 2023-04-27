@@ -246,6 +246,7 @@ export class World {
     private internActivateWorld() {
         if (!this._factory)
             throw new Error("Invalid state!");
+        this.time = 0;
 
         // new activator instance
         this._entityActivator = this.worldDesc.activatorFactory();

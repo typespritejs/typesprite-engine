@@ -18,7 +18,7 @@ export class SpriteSheetLoader extends ResourceLoader {
     load(path:string, loader):Promise<any> {
         let model = null;
         return loader.request([`json:${path}`])
-            .then(json => {
+            .then(([json]) => {
                 model = json as SpriteSheetModel;
                 if (!(model.version > 0) && model.format !== "TypeSpriteSheet") {
                     throw `Unknown version/format.`;

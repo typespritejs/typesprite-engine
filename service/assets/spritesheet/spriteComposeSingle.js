@@ -24,10 +24,12 @@ export async function composeSingle(model, job, fileCacheDir) {
     const imgH = loadedImage.bitmap.height;
     const originId = model.addOrigin(sourceFileName, imgW, imgH);
 
-    model.addFrameSource(
+    const fid = model.addFrameSource(
         loadedImage,
         0, 0, imgW, imgH,
         0, 0,
         originId
     )
+
+    model.addSlice(job.name, fid)
 }

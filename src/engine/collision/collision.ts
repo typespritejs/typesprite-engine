@@ -574,11 +574,14 @@ function rectIntersectsWithLine(a:CollisionRect, b:CollisionLine):boolean {
     // p.y = b.y2;
     // if (pointInRect(a, p))
     //     return true;
-    return  lineIntersectsWithLineBold(b.x, b.y, b.x2, b.y2,   a.x,       a.y,         a.x + a.w, a.y) ||       // top
-        lineIntersectsWithLineBold(b.x, b.y, b.x2, b.y2,   a.x,       a.y,         a.x,       a.y + a.h) || // left
-        lineIntersectsWithLineBold(b.x, b.y, b.x2, b.y2,   a.x + a.w, a.y,         a.x + a.w, a.y + a.h) || // right
-        lineIntersectsWithLineBold(b.x, b.y, b.x2, b.y2,   a.x,       a.y + a.h,   a.x + a.w, a.y + a.h)    // bottom
-        ;
+
+    const _t = lineIntersectsWithLineBold(b.x, b.y, b.x2, b.y2,   a.x,       a.y,         a.x + a.w, a.y);
+    const _r = lineIntersectsWithLineBold(b.x, b.y, b.x2, b.y2,   a.x,       a.y,         a.x,       a.y + a.h);
+    const _b = lineIntersectsWithLineBold(b.x, b.y, b.x2, b.y2,   a.x + a.w, a.y,         a.x + a.w, a.y + a.h);
+    const _l = lineIntersectsWithLineBold(b.x, b.y, b.x2, b.y2,   a.x,       a.y + a.h,   a.x + a.w, a.y + a.h);
+
+    return _t || _r || _b || _l;
+
 }
 
 // ---------------------------------------------------------------------------------------------------

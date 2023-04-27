@@ -8,6 +8,7 @@ import {LUIElement} from "./LUIElement";
 import {FatRenderer} from "@tsjs/engine/tt2d/FatRenderer";
 import {LUIRect} from "./LUIRect";
 import {LUILayer} from "./elements/LUILayer";
+import {Rect} from "@tsjs/engine/tt2d/Rect";
 
 
 /**
@@ -110,6 +111,9 @@ export class LUIManager {
         return this.lastElapsed;
     }
 
+    public getRootSpace():LUIRect {
+        return this._rootSpace;
+    }
 
     getPixelSize(): number {
         return this._pixelSize;
