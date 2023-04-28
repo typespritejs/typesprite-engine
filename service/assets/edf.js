@@ -83,7 +83,7 @@ export async function buildGameImportFile(config, gameSearchPaths,  subDir, forc
 
     lines.push(`import {registerComponent} from 'typesprite'`);
     for (const cmp of components) {
-        let cmpPath = cmp.substring(gameDir.length);
+        let cmpPath = cmp.substring(gameDir.length).replaceAll('\\', '/');
 
         if (forceJS && cmpPath.toLowerCase().endsWith(".ts")) {
             cmpPath = cmpPath.substring(0, cmpPath.length-3) + ".js";
