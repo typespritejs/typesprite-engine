@@ -399,14 +399,12 @@ alert(error);
         res.write(outJS);
         res.end();
     })
-    console.log("engineDir:", engineDir + "/docs");
-    app.use("/docs", express.static(engineDir + "/docs") );
     app.use("/", express.static(gameDir + ""));
     console.log("starting...");
     const runApp = app.listen(config.serve.port, () => {
         console.log("------------------------------");
-        console.log("⭐️", config.gamePackageJson.displayName);
-        console.log("⭐️ http://localhost:" + config.serve.port + "");
+        console.log("✨️", config.gamePackageJson.displayName || config.gamePackageJson.name);
+        console.log("🔗️ http://localhost:" + config.serve.port + "");
         console.log("------------------------------");
     });
     return runApp;

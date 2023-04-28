@@ -6,7 +6,7 @@
     "dependencies": {
         "express": "^4.17.1",
         "errorhandler": "1.5.1",
-        "jimp": "0.16.2",
+        "jimp": "^0.16.13",
         "esbuild": "^0.15"
     },
     "devDependencies": {

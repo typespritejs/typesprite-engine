@@ -21,7 +21,11 @@ export async function parseGamePackage(gameDir) {
 }
 
 async function importFresh(modulePath) {
-    const cacheBustingModulePath = `${modulePath}?update=${Date.now()}`
+
+
+
+    const prefix = process.platform === "win32" ? "file://" : "";
+    const cacheBustingModulePath = `${prefix}${modulePath}?update=${Date.now()}`
     return (await import(cacheBustingModulePath))
 }
 

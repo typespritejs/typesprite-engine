@@ -196,7 +196,7 @@ export async function injectGameRunnerCode(edfs, dots, config, runConfig, lines,
                     afterLines.push(`console.error("typesprite.config.mjs::run.activator not found: ${activatorPath}")`);
                     continue;
             }
-            activatorMap[worldName] = `() => new ${clzName}();`;
+            activatorMap[worldName] = `() => new ${clzName}()`;
         }
     }
     else if (runConfig.activator === undefined) {
@@ -282,11 +282,12 @@ export async function injectGameRunnerCode(edfs, dots, config, runConfig, lines,
         const worldName = edfFileName.substring(0, edfFileName.length-".edf".length);
         if (worldName.startsWith("_") || worldName.endsWith("_")) {
             console.log(`Skip world: ${edfAssetPath} due to ignore-pattern.`);
+            afterLines.push(`console.log("Skip world: ${edfAssetPath} due to ignore-pattern.");`);
             continue;
         }
 afterLines.push(`config.worlds.push({
     name:"${worldName}", 
-    edfPath:"${edfAssetPath}", 
+    edfPath:"${edfAssetPath.replaceAll('\\', '/')}", 
     activatorFactory: ${activatorMap[worldName]||defaultActivator},
 })`);
     }
@@ -324,7 +325,7 @@ afterLines.push(`config.worlds.push({
  *   test: none
  * result: ["package", "package", "SomeClass"]
  *
- *  given: SomeClass:package/dist
+ *  given: package/dist:SomeClass
  *   test: none
  * result: ["package", "package/dist", "SomeClass"]
  *
@@ -342,8 +343,8 @@ export async function resolveImportFile(filePath, basePath = null) {
     //
     const packageSplit = filePath.indexOf(":")
     if (packageSplit > -1) {
-        const className = filePath.substring(0, packageSplit);
-        const packageName = filePath.substring(packageSplit + 1);
+        const className = filePath.substring(packageSplit + 1);
+        const packageName = filePath.substring(0, packageSplit);
         return ["package", packageName, className];
     }
     //
@@ -370,8 +371,8 @@ export async function resolveImportFile(filePath, basePath = null) {
     // file found. let's split it
     //
     pathWithEnding = basePath ? path.relative(basePath, pathWithEnding) : pathWithEnding;
-    const splitPos = pathWithEnding.lastIndexOf("/");
+    const splitPos = pathWithEnding.lastIndexOf(path.sep);
     // const outPath = pathWithEnding.substring(0, splitPos);
     const className = pathWithEnding.substring(splitPos + 1);
-    return ["file", pathWithEnding, className.substring(0, className.length-3)];
+    return ["file", pathWithEnding.replaceAll('\\', '/'), className.substring(0, className.length-3).replaceAll('\\', '/')];
 }
