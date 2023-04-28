@@ -40,6 +40,8 @@ import {fileExists} from "../../utils/files.js";
  *
  */
 export async function buildSingleSheet(sheetPath, cacheDir, asepriteBin) {
+    asepriteBin = process.platform === 'win32' ? `"${asepriteBin}"` : asepriteBin;
+
     // await ensureVersion(asepriteBin);
     const files = await fs.readdir(sheetPath);
     if (files.length === 0) {
