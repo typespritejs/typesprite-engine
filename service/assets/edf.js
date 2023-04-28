@@ -88,7 +88,7 @@ export async function buildGameImportFile(config, gameSearchPaths,  subDir, forc
         if (forceJS && cmpPath.toLowerCase().endsWith(".ts")) {
             cmpPath = cmpPath.substring(0, cmpPath.length-3) + ".js";
         }
-        if (cmp.indexOf(":") > -1) {
+        if (cmp.indexOf(":") > -1 && !cmp.startsWith(gameDir)) {
             const [cmpName, pkg] = cmp.split(":", 2);
             const clzName = `${cmpName}_${pkg.replaceAll(/\/|\-/g, '_')}`
             lines.push(`import {${cmpName} as ${clzName}} from '${pkg}'`)
