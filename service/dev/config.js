@@ -99,7 +99,7 @@ export async function parseGameConfig(command, gameDir, engineDir) {
     }
 
     if (!config.assetPaths || config.assetPaths.length == 0)
-        config.assetPaths = ["game", "assets"];
+        config.assetPaths = ["assets"];
 
     const gamePackageJsonPath = path.join(runContext.gameDir, 'package.json');
     try {
