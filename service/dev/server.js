@@ -232,7 +232,7 @@ const startServer = async function(gameDir, engineDir) {
     app.get('/game.json', async(req, res) => {
         const gamePackageJson = await parseGamePackage(gameDir);
         return res.send({
-            title: gamePackageJson.displayName,
+            title: gamePackageJson.displayName || gamePackageJson.name,
             version: gamePackageJson.version,
             package: gamePackageJson.name,
         });

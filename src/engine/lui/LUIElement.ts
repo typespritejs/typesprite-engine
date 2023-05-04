@@ -603,4 +603,35 @@ export class LUIElement {
     }
     public onMouseUp(x:number, y:number) {
     }
+
+    public getChildIndex(child:LUIElement) {
+        const children = this._children || [];
+        let oldIndex = -1;
+        for (let i = 0; i < children.length; i++) {
+            if (children[i] === child) {
+                oldIndex = i;
+                break;
+            }
+        }
+        return oldIndex;
+    }
+
+    public setChildIndex(child:LUIElement, newIndex:number) {
+        const children = this._children || [];
+        let oldIndex = this.getChildIndex(child);
+        if (oldIndex === -1) {
+            console.error("setChildIndex failed. Not a child.");
+            return;
+        }
+        if (oldIndex === newIndex) {
+            return;
+        }
+        if (newIndex < 0 || newIndex >= children.length) {
+            console.error("setChildIndex failed. newIndex out of bounds", newIndex, children);
+            return;
+        }
+
+        children.splice(oldIndex, 1);
+        children.splice(newIndex, 0, child);
+    }
 }
