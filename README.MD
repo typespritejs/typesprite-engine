@@ -3,7 +3,7 @@
 Entity & Component game engine with batteries included for browser. MIT License.
 
   - 🔥 2D WebGL graphics engine + UI
-  - 🌆 Automatic SpriteSheet generation
+  - 🌆 SpriteSheet generation
   - 📦 Bundling solved. Typescript just works. esbuild based.
   - ⌨️ Made for developers. 
   - 🌍 Manage your game in Worlds
@@ -12,24 +12,26 @@ Entity & Component game engine with batteries included for browser. MIT License.
 
 # Quick Start
 
-```ts
-// TODO write this :-)
+```bash
+npm create typesprite@latest
+# yarn create typesprite
+# bunx create-typesprite@latest
 ```
 
-# A NPM package
+# Fully charged dev-environment:
 
-The engine is meant to be used as an NPM package. It brings it's own dev-server, asset pipeline and bundler.
+Requires NodeJS as a runtime to get:
 
+  - dev-server
+  - asset pipeline
+  - bundler (esbuild internally)
 
 # ⚠️ Under development ⚠️
 
   - Expect things to change
   - Expect things to break
   - Expect parts to be missing
-  - Currently, NPM only for now
   - Semantic versioning won't be a thing until 1.0.0
-  - Might not work on Windows, yet.
-  
 
 # MIT License  
 
