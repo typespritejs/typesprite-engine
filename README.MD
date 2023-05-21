@@ -3,6 +3,15 @@
 
 # TypeSpriteJS Game Engine
 
+<p>
+	<a href="https://www.npmjs.com/package/typesprite" target="__blank"><img src="https://img.shields.io/npm/v/typesprite?color=0476bc&label=npm" alt="NPM version"></a>
+	<!--a href="https://www.npmjs.com/package/typesprite" target="__blank"><img alt="NPM Downloads" src="https://img.shields.io/npm/dm/typesprite?color=3890aa&label="></a-->
+	<a href="https://typespritejs.dev/start/start.html" target="__blank"><img src="https://img.shields.io/static/v1?label=&message=docs&color=1e8a7a" alt="Docs"></a>
+    <a href="https://github.com/typespritejs/typesprite-engine/blob/develop/README.MD" target="__blank"><img src="https://img.shields.io/npm/l/typesprite" alt="License"></a>
+	<a href="https://github.com/typespritejs/typesprite-engine" target="__blank"><img alt="GitHub stars" src="https://img.shields.io/github/stars/typespritejs/typesprite-engine?style=social"></a>
+	<a href="https://discord.gg/UaTNf2wWns" target="__blank"><img alt="Discord Server" src="https://img.shields.io/discord/1072871248788455525?style=social&logo=discord"></a>
+</p>
+
 A Typescript 2D game engine for quick prototyping, game jams and web developers who are interested in game dev.
 
 - 🔥 2D WebGL graphics engine + UI
@@ -13,14 +22,7 @@ A Typescript 2D game engine for quick prototyping, game jams and web developers 
 - 🧱 Consume custom formats using custom loader and properties
 - 🤗 Good neighbor no singletons, no globals.
 
-<p>
-	<a href="https://www.npmjs.com/package/typesprite" target="__blank"><img src="https://img.shields.io/npm/v/typesprite?color=0476bc&label=npm" alt="NPM version"></a>
-	<!--a href="https://www.npmjs.com/package/typesprite" target="__blank"><img alt="NPM Downloads" src="https://img.shields.io/npm/dm/typesprite?color=3890aa&label="></a-->
-	<a href="https://typespritejs.dev/start/start.html" target="__blank"><img src="https://img.shields.io/static/v1?label=&message=docs&color=1e8a7a" alt="Docs"></a>
-    <a href="https://github.com/typespritejs/typesprite-engine/blob/develop/README.MD" target="__blank"><img src="https://img.shields.io/npm/l/typesprite" alt="License"></a>
-	<a href="https://github.com/typespritejs/typesprite-engine" target="__blank"><img alt="GitHub stars" src="https://img.shields.io/github/stars/typespritejs/typesprite-engine?style=social"></a>
-	<a href="https://discord.gg/UaTNf2wWns" target="__blank"><img alt="Discord Server" src="https://img.shields.io/discord/1072871248788455525?style=social&logo=discord"></a>
-</p>
+
 
 # Quick Start
 
