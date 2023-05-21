@@ -1,14 +1,27 @@
-# TypeSpriteJS Game Engine (WIP)
 
-Entity & Component game engine with batteries included for browser. MIT License.
+<p align="center">
+	<a href="https://www.npmjs.com/package/typesprite" target="__blank"><img src="https://img.shields.io/npm/v/typesprite?color=0476bc&label=" alt="NPM version"></a>
+	<a href="https://www.npmjs.com/package/typesprite" target="__blank"><img alt="NPM Downloads" src="https://img.shields.io/npm/dm/typesprite?color=3890aa&label="></a>
+	<a href="https://typespritejs.dev/start/start.html" target="__blank"><img src="https://img.shields.io/static/v1?label=&message=docs&color=1e8a7a" alt="Docs"></a>
+    <a href="https://github.com/typespritejs/typesprite-engine/blob/develop/README.MD" target="__blank"><img src="https://img.shields.io/npm/l/typesprite" alt="License"></a>
+	<br>
+	<br>
+	<a href="https://github.com/typespritejs/typesprite-engine" target="__blank"><img alt="GitHub stars" src="https://img.shields.io/github/stars/typespritejs/typesprite-engine?style=social"></a>
+	<a href="https://discord.gg/UaTNf2wWns" target="__blank"><img alt="Discord Server" src="https://img.shields.io/discord/1072871248788455525?style=social&logo=discord"></a>
+</p>
 
-  - 🔥 2D WebGL graphics engine + UI
-  - 🌆 SpriteSheet generation
-  - 📦 Bundling solved. Typescript just works. esbuild based.
-  - ⌨️ Made for developers. 
-  - 🌍 Manage your game in Worlds
-  - 🧱 Consume custom formats using custom loader and properties
-  - 🤗 Good neighbor no singletons, no globals.
+
+# TypeSpriteJS Game Engine
+
+A Typescript 2D game engine for quick prototyping, game jams and web developers who are interested in game dev.
+
+- 🔥 2D WebGL graphics engine + UI
+- 🌆 SpriteSheet generation
+- 📦 Bundling solved. Typescript just works. esbuild based.
+- ⌨️ Made for developers.
+- 🌍 Manage your game in Worlds
+- 🧱 Consume custom formats using custom loader and properties
+- 🤗 Good neighbor no singletons, no globals.
 
 # Quick Start
 
@@ -22,18 +35,18 @@ npm create typesprite@latest
 
 Requires NodeJS as a runtime to get:
 
-  - dev-server
-  - asset pipeline
-  - bundler (esbuild internally)
+- dev-server
+- asset pipeline
+- bundler (esbuild internally)
 
 # ⚠️ Under development ⚠️
 
-  - Expect things to change
-  - Expect things to break
-  - Expect parts to be missing
-  - Semantic versioning won't be a thing until 1.0.0
+- Expect things to change
+- Expect things to break
+- Expect parts to be missing
+- Semantic versioning won't be a thing until 1.0.0
 
-# MIT License  
+# MIT License
 
 [MIT license](LICENSE.MD), Christoph Schnackenberg [https://xtoff.games](https://xtoff.games)
 

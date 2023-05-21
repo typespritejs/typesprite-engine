@@ -20,7 +20,7 @@ import {SpriteSheetModel} from "@tsjs/engine/tt2d/SpriteSheetModel";
  * assets/gui/title.single.png        // Useful naming convention avoids configuration
  * assets/gui/buttons.slices.aseprite // Nice format support (*)
  *
- * *) Asperite requires typesprite.config.mjs
+ * *) Aseprite requires typesprite.config.mjs
  * ```
  *
  * Learn more about the Sprite Sheet generation: FIX: LINK!

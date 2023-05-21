@@ -5,7 +5,7 @@ import {parseVersion} from '../../service/assets/spritesheet/aseprite_cli'
 import {parseFilePattern} from '../../service/assets/spritesheet/files'
 
 
-test("Asperite Version Parsing",() => {
+test("Aseprite Version Parsing",() => {
     expect(parseVersion("Aseprite 1.2.29")).toStrictEqual({
         app: "Aseprite", main: 1, mid: 2, min: 29
     })
@@ -47,7 +47,7 @@ test("Filter ignored files", () => {
     expect(reasPatterhIssue('/not/on/OS/karenfat.font.not_ase')).toStrictEqual("FOREIGN_FILE_TYPE");
 })
 
-// test("Acutal Asperite Version works", async() => {
+// test("Acutal Aseprite Version works", async() => {
 //
 //     try {
 //         await ensureVersion(asepritePath);
