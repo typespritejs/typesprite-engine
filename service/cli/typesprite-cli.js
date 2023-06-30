@@ -22,7 +22,7 @@ export async function cli() {
         switch(process.argv[2]) {
             case "dev":
                 console.log("-----------------------------");
-                console.log("⭐️ TypeSpriteJS Game Engine ");
+                console.log("⭐️ TypeSpriteJS Game Engine");
                 console.log("-----------------------------");
                 process.env.PWD = process.env.PWD || process.cwd();
                 console.log("Game Directory: ", process.env.PWD);
