@@ -15,6 +15,7 @@ import {AffineMatrix} from "@tsjs/engine/tt2d/AffineMatrix";
 import {LUIFreeStackLayout} from "@tsjs/engine/lui/layouts/LUIFreeStackLayout";
 import {LUITreeRenderer} from "@tsjs/engine/lui/styles/LUITreeRenderer";
 import {OverlayCanvas} from "@tsjs/runtime/OverlayCanvas";
+import {World, WorldState} from "@tsjs/entity/World";
 
 
 /**
@@ -33,6 +34,27 @@ import {OverlayCanvas} from "@tsjs/runtime/OverlayCanvas";
  *  - add UI elements to the GUI
  *  - configure how your canvas get's scaled (or tell it that you like to do that yourself)
  *
+ *
+ * # EDF properties:
+ * ```
+ * [prop] clearColor:color = "#f88"  // Very basic BG color
+ * [prop] pixelSize:number = 0       // size of pixels
+ *                                   // 0 = hiDPI support (uses window.devicePixelRatio)
+ *                                   // 1 = 1 pixel in your game is 1 pixel on your monitor
+ *                                   // 2 = 1 pixel in your game is 2 pixels on your monitor
+ *                                   // ... = etc
+ * [prop] scaleMode:string = "scale" // scale: canvas will consume 100% size of the body and auto resize
+ *                                   // fixed: canvas retains the size configured and auto resize
+ *                                   // none:  canvas remains untouched here.
+ *                                   //        Useful if you like to implment your own rescale/canvas
+ *                                   //        management but still use this class.
+ *                                   //        To get access to the canvas use: @linkGlobal() canvas:HTMLCanvasElement;
+ * [prop] uiEventWorlds:string = ""  // A list of the worlds that shall receive the UI events.
+ *                                   // Per default all worlds receive all UI-Events (like onMessage_ButtonPressed).
+ *                                   // Put this e.g. to "core, level" would mean only the worlds "core" and "level"
+ *                                   // would receive the events.
+ * ```
+ *
  * @see FatRenderer
  * @see LUIManager
  */
@@ -50,6 +72,8 @@ export class GraphicsEngine extends Component {
     private pixelSize:number;
     @prop('string', "scale", {allow: ["scale", "fixed", "none"]})
     private scaleMode:string;
+    @prop('string', "")
+    private uiEventWorlds:string;
     private _pixelSize:number;
 
     public lui:LUIManager;
@@ -72,6 +96,8 @@ export class GraphicsEngine extends Component {
 
     private _debugZoom:number = 0;
     private _keyDown:Record<string, boolean> = {};
+
+    private uiEventTargetWorlds:World[] = [];
 
 
     public get debugZoom():number {
@@ -112,9 +138,28 @@ export class GraphicsEngine extends Component {
         this._gui = layer;
         this.world.requestRenderEvents(this.entity);
 
+        if (this.uiEventWorlds) {
+            this.uiEventTargetWorlds = this.uiEventWorlds.split(',')
+                .map(e => e.trim())
+                .filter(e => e)
+                .map(e => this.world.manager.getWorldByName(e))
+                .filter(w => w ? true : false)
+            ;
+        }
+        else {
+            for (let i=0; i<this.world.manager.getNumWorlds(); i++)
+                this.uiEventTargetWorlds.push(this.world.manager.getWorldByIndex(i));
+        }
+        console.log("GraphicsEngine::uiEventWorlds => ", JSON.stringify(this.uiEventTargetWorlds.map(e => e.name)));
+
         this.lui.addListener('message', messageInfo => {
             const {eventData, message, source} = messageInfo;
-            this.world.sendMessage(message, eventData);
+            if (this.uiEventTargetWorlds) {
+                for (const world of this.uiEventTargetWorlds) {
+                    if (world.getState() == WorldState.Populated)
+                        world.sendMessage(message, eventData);
+                }
+            }
         });
 
         this.lui.addListener('key', ({key, isDown}) => {
