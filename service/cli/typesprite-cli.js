@@ -1,7 +1,7 @@
 /**
  * Copyright (c) 2013-2023 Christoph Schnackenberg <mail@xtoff.games>
  *
- * MIT license: https://github.com/typespritejs/typesprite-gameengine/blob/develop/LICENSE.MD
+ * MIT license: https://github.com/typespritejs/typesprite-engine/blob/develop/LICENSE.MD
  */
 import {server} from "../dev/server.js";
 import { readJson } from "../utils/files.js";
