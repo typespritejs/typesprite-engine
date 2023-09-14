@@ -15,11 +15,10 @@ export async function scanDirectoryForEDFComponents(rootDir) {
 
     files.filter(f => f.endsWith(".ts"))
         .forEach(f => {
-            // console.log(f);
-            // const tsInfo = {
-            //     path: path.dirname(f),
-            //     file: ,
-            // }
+            // FIX: this should be done using ignore-pattern of 'readAllDirectoriesAndFiles'
+            // There is an issue there
+            if (f.indexOf("/node_modules/") > -1)
+                return;
             const file = path.basename(f);
             tsMap[file] = tsMap[file]||[];
             tsMap[file].push(f);
@@ -56,6 +55,7 @@ export async function scanDirectoryForEDFComponents(rootDir) {
             }
         }
     }
+
     return {
         components: [...cmps],
         issues: [...issues],
@@ -232,6 +232,45 @@ export async function injectGameRunnerCode(edfs, dots, config, runConfig, lines,
         const clzName = `ManualActivator_${clsIndex++}`;
         lines.push(`import {ManualActivator as ${clzName}} from 'typesprite'`)
         defaultActivator = `() => new ${clzName}()`
+    }
+    //
+    // property parser
+    //
+    if (Array.isArray(runConfig.propertyParser)) {
+        const parserRegisterLines = [];
+        for (const registerPath of runConfig.propertyParser) {
+            const [result, moduleOrPath, importName] = await resolveImportFile(registerPath, gameDir);
+            const clzName = `${importName}_${clsIndex++}`
+            switch(result) {
+                case "file":
+                    parserRegisterLines.push([
+                        `import {${importName} as ${clzName}} from '${dots}/${moduleOrPath}'`,
+                        `new ${clzName}()`,
+                    ]);
+                    break;
+                case "package":
+                    parserRegisterLines.push([
+                        `import {${importName} as ${clzName}} from '${moduleOrPath}'`,
+                        `new ${clzName}()`,
+                    ]);
+                    break;
+                default:
+                case "not_found":
+                    afterLines.push(`console.error("typesprite.config.mjs::run.propertyParser not found: ${registerPath}")`);
+                    break;
+            }
+        }
+        if (parserRegisterLines.length > 0) {
+            afterLines.push(`const propParser = []`)
+            for (const [line, afterLine] of parserRegisterLines) {
+                lines.push(line);
+                afterLines.push(`propParser.push(${afterLine})`);
+            }
+            afterLines.push(`config.propertyParser = propParser;`)
+        }
+    }
+    else if (runConfig.propertyParser) {
+        console.warn(`Unrecognized type for 'propertyParser' in the run config. Expected string[] found: ${typeof runConfig.propertyParser}`);
     }
     //
     // resource loader
