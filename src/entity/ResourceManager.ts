@@ -4,6 +4,8 @@
  * MIT license: https://github.com/typespritejs/typesprite-engine/blob/develop/LICENSE.MD
  */
 
+import { WorldManager } from "./WorldManager";
+
 
 /**
  * This is mostly an internal class. TypeSprite normaly takes care of all
@@ -238,7 +240,7 @@ export class ResourceManager {
             const loader = this.loaders.get(loaderId);
             if (!loader) {
                 res.state = ResourceState.Error;
-                res.issue = `Loader not found! 💡 Forget to use the loader-prefix? Try 'json:path/to/myFile.json'`;
+                res.issue = `Loader not found! 💡 Forget to use the loader-prefix? Try 'LOADER_TYPE:path/to/myFile.type'`;
                 console.error(`Failed to load ${res.resUrl}. ${res.issue}`);
                 this.scheduleHeartbeat();
                 continue;
@@ -375,6 +377,12 @@ export class ResourceManager {
         this.rootPath = rootPath;
     }
 
+    setWorldManager(wm:WorldManager) {
+        for (const l of this.loaders.values()) {
+            l.setWorldManager(wm);
+        }
+    }
+
     getActualUrl(path:string):string {
         return this.rootPath ? `${this.rootPath}${path}` : path;
     }
@@ -431,6 +439,16 @@ export enum ResourceState {
 export abstract class ResourceLoader {
 
     abstract getLoaderId():string;
+
+    private _worldManager:WorldManager;
+
+    setWorldManager(wm:WorldManager) {
+        this._worldManager = wm;
+    }
+
+    get worldManager():WorldManager {
+        return this._worldManager;
+    }
 
     canHandleUrl(url:string):boolean {
         return url.startsWith(`${this.getLoaderId()}:`);

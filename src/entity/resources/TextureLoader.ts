@@ -11,9 +11,7 @@ import {EngineContextProvider} from "@tsjs/runtime/GameRunner";
 
 export class TextureLoader extends ResourceLoader {
 
-    constructor(
-        private ec:EngineContext|EngineContextProvider
-    ){
+    constructor(){
         super();
     }
 
@@ -24,9 +22,10 @@ export class TextureLoader extends ResourceLoader {
     load(path:string, loader:SubResourceLoader):Promise<any> {
         return loader.request([`image:${path}`])
         .then(([img]) => {
-            const ec = ((typeof this.ec["getContext"] === "function") ? (this.ec as EngineContextProvider).getContext() : this.ec) as EngineContext;
+            const ec = this.worldManager.globals.engineContext;
+            // const ec = ((this.ec && typeof this.ec["getContext"] === "function") ? (this.ec as EngineContextProvider).getContext() : this.ec) as EngineContext;
             if (!ec) {
-                throw `Cannot load image before EngineContext is set.`
+                throw `TextureLoader: Cannot load image before EngineContext is set.`
             }
             const tex = ManagedTexture.fromImage(ec, img as HTMLImageElement, false, false);
             tex.retain();

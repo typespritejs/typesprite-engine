@@ -134,7 +134,7 @@ export class GameRunner implements EngineContextProvider {
                 .addResourceLoader(new JsonLoader())
                 .addResourceLoader(new ImageLoader())
                 .addResourceLoader(new AudioLoader())
-                .addResourceLoader(new TextureLoader(this))
+                .addResourceLoader(new TextureLoader())
                 .addResourceLoader(new SpriteSheetLoader())
         }
         for (const rl of config.resourceLoader||empty) {
@@ -159,6 +159,7 @@ export class GameRunner implements EngineContextProvider {
         this.worldManager = wmb.build();
         if (config.resourcePathPrefix)
             this.worldManager.resources.setRootPath(config.resourcePathPrefix);
+        this.worldManager.resources.setWorldManager(this.worldManager);
         //
         // start worlds
         //
