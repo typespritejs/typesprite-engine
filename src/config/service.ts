@@ -11,7 +11,7 @@ export enum CanvasType {
 }
 
 
-export interface TypeSpriteServiceConfig extends SharedRunnerConfig {
+export interface TypeSpriteServiceConfig {
     /** Port for the dev-server */
     servePort?:number,
     /** WIP, not sure yet */

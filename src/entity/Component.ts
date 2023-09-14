@@ -19,7 +19,7 @@ import {ComponentRef} from "@tsjs/entity/ComponentRef";
  *
  * export class MyPlayer extends Component {
  *
- *     _@prop('number', 100) // NOTE: this needs to be @prop and not _@prop
+ *     @prop('number', 100)
  *     private life:number;
  *
  *     onInit() {

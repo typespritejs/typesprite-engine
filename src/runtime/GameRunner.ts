@@ -541,10 +541,10 @@ export enum MainLoopType {
     Render,
     /**
      * `update()` will be called every frame (like Render). However, if
-     * a frame takes longer than 60 FPS it'll be called with 1/60 elapsed.
+     * the framerate gets below 60 FPS it'll be called more ofthen than Render with 1/60 elapsed values.
      *
      * This will cause update's elapse-value retains stable in situations
-     * of low FPS.
+     * of low FPS. In situations with higher FPS (like 120) it'll be in sync with Render. 
      */
     Adjusted,
     /**
@@ -576,6 +576,18 @@ export enum MainLoopType {
 
 // ---------------------------------------------------------------------------------------------------------------------
 
+/**
+ * All options required to create GameRunner instance.
+ * 
+ * ```ts
+ * new GameRunner({
+ *   propertyParser: [
+ *     new MyPropertyParser(),
+ *   ],
+ *   // and more...
+ * } as GameRunnerConfig) // use this in TypeScript to get code completion
+ * ```
+ */
 export interface GameRunnerConfig extends SharedRunnerConfig {
     standardActivatorFactory?: ActivatorFactory,
     propertyParser?: PropertyParser[],
