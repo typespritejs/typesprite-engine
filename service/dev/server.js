@@ -28,9 +28,9 @@ let debouncedRestarter = null;
 
 export const server = async function(gameDir, engineDir, watchConfig = false) {
     runningServer = await startServer(gameDir, engineDir);
-    // if (watchConfig) {
-    //     enableConfigFileWatcher(gameDir, engineDir);
-    // }
+    if (watchConfig) {
+        enableConfigFileWatcher(gameDir, engineDir);
+    }
 }
 
 function enableConfigFileWatcher(gameDir, engineDir) {
@@ -49,15 +49,21 @@ function startConfigWatcher(filePath, abortController, gameDir, engineDir) {
         try {
             const watcher = watch(filePath, { signal: abortController.signal });
             for await (const event of watcher) {
-                // console.log(event);
-                if (debouncedRestarter) {
-                    clearTimeout(debouncedRestarter);
-                    debouncedRestarter = null;
-                }
-                debouncedRestarter = setTimeout(() => {
-                    debouncedRestarter = null;
-                    restartServer(gameDir, engineDir).catch(err => err);
-                }, 100);
+                //
+                // FIX: on macos + vscode we get two "change" events.
+                //
+                // Previous attempts to use debouncing are not satisfying
+                //
+                restartServer(gameDir, engineDir).catch(err => err);
+                // if (debouncedRestarter) {
+                //     clearTimeout(debouncedRestarter);
+                //     debouncedRestarter = null;
+                // }
+                // debouncedRestarter = setTimeout(() => {
+                //     debouncedRestarter = null;
+                //     restartServer(gameDir, engineDir).catch(err => err);
+                // }, 500);
+                
             }
         } catch (err) {
             if (err.name === 'AbortError')
@@ -66,6 +72,8 @@ function startConfigWatcher(filePath, abortController, gameDir, engineDir) {
         }
     })();
 }
+
+let restartCount = 1;
 
 async function restartServer(gameDir, engineDir) {
     if (!runningServer) {
@@ -79,7 +87,7 @@ async function restartServer(gameDir, engineDir) {
     oldServer = null;
     console.log("Restart Server...");
     runningServer = await startServer(gameDir, engineDir);
-    console.log("Restarted!");
+    console.log("Restarted", restartCount++);
 }
 
 
