@@ -51,6 +51,7 @@ export async function parseGameConfig(command, gameDir, engineDir) {
     };
 
     let tempFile = null;
+    let configIssue = null;
     try {
         let mjsPath = path.join(gameDir, mjsFile);
         if (!mjsExist && jsExist) {
@@ -87,7 +88,8 @@ export async function parseGameConfig(command, gameDir, engineDir) {
         }
     }
     catch(err) {
-        console.error(err);
+        configIssue = err;
+        // console.error(err);
     }
     finally {
         try {
@@ -96,6 +98,11 @@ export async function parseGameConfig(command, gameDir, engineDir) {
         }
         catch(err) {
         }
+    }
+
+    if (configIssue) {
+        console.error(`❌ typesprite.config.mjs seems to have an issue. Please check errors below.`);
+        throw configIssue;
     }
 
     if (!config.assetPaths || config.assetPaths.length == 0)

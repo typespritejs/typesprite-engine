@@ -23,6 +23,7 @@ const run = async () => {
         await import (testFile);
     }
     finishTests();
+    console.log("-----")
 }
 
 run().catch(err => console.error(err));
