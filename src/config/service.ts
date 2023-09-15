@@ -5,11 +5,6 @@
  */
 import {MainLoopType} from "@tsjs/runtime/GameRunner";
 
-export enum CanvasType {
-    Create,
-    SearchSelector,
-}
-
 
 export interface TypeSpriteServiceConfig {
     /** Port for the dev-server */
@@ -164,12 +159,8 @@ export interface SharedRunnerConfig {
      */
     maxBlurredFps?:number,
     /**
-     * "create" => a new canvas is created and attached to the canvas selector object
-     * "selector" => it is expected that the canvas selector points to a canvas
-     */
-    canvasType?:CanvasType,
-    /**
-     * depends on canvas Type
+     * If set it is expected that a canvas can be found using this query-selector value.
+     * If not set a canvas will be created and attached to the body.
      */
     canvasSelector?:string,
     /**

@@ -86,7 +86,7 @@ export class GameRunner implements EngineContextProvider {
             if (config.canvasSelector && !selectorElement) {
                 console.warn(`GameRunner() cannot find element with selector: '${config.canvasSelector}'`);
             }
-            if (!config.canvasType) {
+            if (!config.canvasSelector) {
                 canvas = document.createElement("canvas");
                 const target = selectorElement || document.querySelector("body");
                 target.appendChild(canvas);

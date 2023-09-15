@@ -164,7 +164,6 @@ export async function injectGameRunnerCode(edfs, dots, config, runConfig, lines,
         "noAutostart",
         "maxFps",
         "maxBlurredFps",
-        "canvasType",
         "canvasSelector",
         "resourcePathPrefix",
     ];
