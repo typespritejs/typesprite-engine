@@ -147,6 +147,16 @@ export interface SharedRunnerConfig {
      * to be done by hand.
      */
     noAutostart?:boolean,
+    /**
+     * Disables the creation (and global registration) of the EngineContext
+     * object. Use this when use/create your own graphics engine.
+     * 
+     * ### Background: 
+     * 
+     * The engine takes care of creating a WebGL context which is used by
+     * built-in components like: GraphicsEngine and ManagedTexture. It's
+     * registered as a global variable world.mananger.globals.engineContext (or \@linkGlobal).
+     */
     noEngineContext?:boolean,
     /**
      * when > 0 it will cap the FPS to the given value.
