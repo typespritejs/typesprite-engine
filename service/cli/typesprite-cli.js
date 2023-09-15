@@ -31,9 +31,7 @@ export async function cli() {
                     return;
                 }
                 const propExperimentalReload = cliProps.cliHas('experimental-reload');
-                console.log("-----------------------------");
-                console.log("⭐️ TypeSpriteJS Game Engine");
-                console.log("-----------------------------");
+                console.log("⭐️ TypeSpriteJS Game Engine ⭐️");
                 process.env.PWD = process.env.PWD || process.cwd();
                 console.log("Game Directory: ", process.env.PWD);
                 await server(process.env.PWD, engineDir, propExperimentalReload);
