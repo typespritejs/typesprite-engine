@@ -422,7 +422,7 @@ export class LUITextBox {
             // const index = this.getFrameIndex(character, ss);
 
             const letterObj = this.getFontLetter(character);
-            const letterFrame = letterObj.frame;
+            const letterFrame = letterObj?.frame;
             if (!letterFrame) {
                 // TODO
                 //  Hier sollte ein "Platzhalterzeichen" gerendert werden!
