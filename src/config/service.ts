@@ -165,7 +165,7 @@ export interface SharedRunnerConfig {
     /**
      * when > 0 it will cap the FPS to the given value if the window has lost the fosus.
      * This is useful during development when your laptop starts to scream at you
-     * while working on a game.
+     * while working on your game.
      */
     maxBlurredFps?:number,
     /**
