@@ -57,7 +57,7 @@ export abstract class ContextResource {
             }
 
             this.released = true;
-            // console.log("Free ContextResource", this);
+            console.log("Free ContextResource", this);
             this.freeResource();
         }
     }

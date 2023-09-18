@@ -339,6 +339,7 @@ export class World {
         this._onRenderEntities.length = 0;
         this._entityActivator = null;
         this.manager.resources.release(this.name);
+        this._state = WorldState.Empty;
     }
 
 
@@ -366,10 +367,14 @@ export class World {
     }
 
     public pause():void {
+        if (this.enabled)
+            console.log("✨ World", this.name, "set to pause");
         this.enabled = false;
     }
 
     public resume():void {
+        if (!this.enabled)
+            console.log("✨ World", this.name, "set to resume");
         this.enabled = true;
     }
 
@@ -814,6 +819,7 @@ export class World {
             }
             else {
                 this._resetting = false;
+                console.log("✨ Cleaned World:", this.name);
             }
         }
     }
@@ -832,9 +838,9 @@ export enum WorldState {
     Restarting,
     /** Failed in some way */
     Error,
-    /** Engine IS populated but likes to restart */
+    /** World IS populated but likes to restart */
     PopulatedWithPendingRestart,
-    /** Engine IS populated but likes to Stop */
+    /** World IS populated but likes to Stop */
     PopulatedWithPendingStop
 }
 

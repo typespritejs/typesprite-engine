@@ -231,6 +231,8 @@ export class GameRunner implements EngineContextProvider {
 
     private draw(elapsed:number) {
         this.worldManager.render(elapsed);
+        if (this.engineContext)
+            this.engineContext.releasePool.resolve();
     }
 
     private runMainloopFixed() {

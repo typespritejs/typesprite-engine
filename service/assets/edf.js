@@ -260,7 +260,7 @@ export async function injectGameRunnerCode(edfs, dots, config, runConfig, lines,
             }
         }
         if (parserRegisterLines.length > 0) {
-            afterLines.push(`const propParser = []`)
+            afterLines.push(`const propParser:PropertyParser[] = []`)
             for (const [line, afterLine] of parserRegisterLines) {
                 lines.push(line);
                 afterLines.push(`propParser.push(${afterLine})`);
@@ -299,7 +299,7 @@ export async function injectGameRunnerCode(edfs, dots, config, runConfig, lines,
             }
         }
         if (loaderRegisterLines.length > 0) {
-            afterLines.push(`const resLoader = []`)
+            afterLines.push(`const resLoader:ResourceLoader[] = []`)
             for (const [line, afterLine] of loaderRegisterLines) {
                 lines.push(line);
                 afterLines.push(`resLoader.push(${afterLine})`);

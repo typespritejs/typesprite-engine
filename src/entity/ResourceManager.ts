@@ -507,9 +507,20 @@ export abstract class ResourceLoader {
             cb(false, err);
             return;
         }
+
+        const feedbackTimer = setTimeout(() => {
+            let clzName = "check the file Loader for " + resUrl;
+            try {
+                clzName = `check this class: ${resManager.getLoaderByUrl(resUrl)[0].constructor.name}`;
+            }
+            catch(err){}
+            console.error("❌",resUrl, `took longer than 5secs to load.\nThis can be an indication of an issue with a (custom) ResourceLoader implementation. If the scene does not start/load ${clzName}`);
+        }, 5000)
         prom.then(resObj => {
+            clearTimeout(feedbackTimer);
             cb(true, resObj);
         }).catch(err => {
+            clearTimeout(feedbackTimer);
             cb(false, err);
         })
     }
