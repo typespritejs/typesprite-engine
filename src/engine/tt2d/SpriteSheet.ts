@@ -368,7 +368,7 @@ export class SpriteSheetFrame {
          */
         public readonly texture: ManagedTexture,
         /**
-         * Frame-rect on the texture. This is likely to be trimmed array.
+         * Frame-rect on the texture. This is likely to be trimmed.
          * To get width/height of the frame as it was defined in the graphics
          * program see sourceRect.width/height.
          */
