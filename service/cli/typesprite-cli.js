@@ -18,13 +18,14 @@ export async function cli() {
 
     if (process.argv.length <= 2) {
         console.log("❌ Please provide a command");
+        process.exitCode = 2;
     }
     else if (process.argv[2]) {
         switch(process.argv[2]) {
             case "dev":
                 const cliProps = parseCommands(
                     new CliConfig()
-                        .appendCommand('experimental-reload', 'e-r', `Enables experimenal monitoring of 'typesprite.config.mjs'`)
+                        .appendCommand('experimental-reload', 'e-r', `Enables experimental watch of 'typesprite.config.mjs'`)
                         .appendCommand('help', 'h', `Shows all options for the 'dev' part of the cli`)
                 );
                 if (cliProps === null) {
@@ -43,6 +44,7 @@ export async function cli() {
                 }
                 catch(err) {
                     console.error(err, "\n------------------------\n🔥 Build failed. Sorry.")
+                    process.exitCode = 1;
                 }
                 break;
             case "version":
@@ -51,6 +53,7 @@ export async function cli() {
                 break;
             default:
                 console.log("❌ Unknown command:", process.argv[2]);
+                process.exitCode = 2;
                 break;
         }
     }
