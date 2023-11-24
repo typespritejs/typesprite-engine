@@ -1,7 +1,6 @@
-
-
-
 # TypeSpriteJS Game Engine
+
+A Typescript 2D game engine for quick prototyping, game jams and web developers who are interested in game dev.
 
 <p>
 	<a href="https://www.npmjs.com/package/typesprite" target="__blank"><img src="https://img.shields.io/npm/v/typesprite?color=0476bc&label=npm" alt="NPM version"></a>
@@ -12,33 +11,31 @@
 	<a href="https://discord.gg/UaTNf2wWns" target="__blank"><img alt="Discord Server" src="https://img.shields.io/discord/1072871248788455525?style=social&logo=discord"></a>
 </p>
 
-A Typescript 2D game engine for quick prototyping, game jams and web developers who are interested in game dev.
+
 
 - 🔥 2D WebGL graphics engine + UI
-- 🌆 SpriteSheet generation
+- 🌆 SpriteSheet generation.
 - 📦 Bundling solved. Typescript just works. esbuild based.
 - ⌨️ Made for developers.
-- 🌍 Manage your game in Worlds
-- 🧱 Consume custom formats using custom loader and properties
+- 🌍 Manage your game in Worlds.
+- 🧱 Consume custom formats using custom loader and properties.
 - 🤗 Good neighbor no singletons, no globals.
-
+- 🧙🏻‍ Custom Dev-Server with asset pipeline.
 
 
 # Quick Start
 
 ```bash
 npm create typesprite@latest
-# yarn create typesprite
-# bunx create-typesprite@latest
+# or
+yarn create typesprite
+# or
+bunx create-typesprite@latest
 ```
 
-# Fully charged dev-environment:
+# What's new?
 
-Requires NodeJS as a runtime to get:
-
-- dev-server
-- asset pipeline
-- bundler (esbuild internally)
+[See Changes](CHANGES.MD)
 
 # ⚠️ Under development ⚠️
 
@@ -46,6 +43,7 @@ Requires NodeJS as a runtime to get:
 - Expect things to break
 - Expect parts to be missing
 - Semantic versioning won't be a thing until 1.0.0
+
 
 # MIT License
 
