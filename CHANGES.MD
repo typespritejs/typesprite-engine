@@ -1,6 +1,6 @@
 # TypeSpriteJS Game Engine - Changes
 
-## v0.2.13
+## v0.2.13, v0.2.14
 
   - `GraphicsEngine` component allows the configuration of which world shall receive ui events (see property: uiEventWorlds)
   - Changed how the ResourceManager interacts with the WorldManager (internal). This changes the way ResourceLoader get access to the global EngineContext.

@@ -39,6 +39,7 @@
     "exports": {
         "./LICENSE.MD": "./LICENSE.MD",
         "./README.MD": "./README.MD",
+        "./CHANGES.MD": "./CHANGES.MD",
         "./package.json": "./package.json",
         "./dist/*": "./dist/*",
         ".": {

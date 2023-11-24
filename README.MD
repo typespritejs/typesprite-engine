@@ -35,7 +35,7 @@ bunx create-typesprite@latest
 
 # What's new?
 
-[See Changes](CHANGES.MD)
+[See Changes](./CHANGES.MD)
 
 # ⚠️ Under development ⚠️
 
@@ -47,7 +47,7 @@ bunx create-typesprite@latest
 
 # MIT License
 
-[MIT license](LICENSE.MD), Christoph Schnackenberg [https://xtoff.games](https://xtoff.games)
+[MIT license](./LICENSE.MD), Christoph Schnackenberg [https://xtoff.games](https://xtoff.games)
 
 The following bits are used but not part of package.json:
 
